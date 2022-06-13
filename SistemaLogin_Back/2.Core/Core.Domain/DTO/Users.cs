@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Core.Domain.DTO
 {
-    public class AppUser : IdentityUser
+    public class Users : IdentityUser
     {
         public string Salt { get; set; }
     }

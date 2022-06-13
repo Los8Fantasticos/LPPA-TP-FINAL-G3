@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Folder Include="JwT\" />
+    <Folder Include="Response\" />
   </ItemGroup>
 
   <ItemGroup>

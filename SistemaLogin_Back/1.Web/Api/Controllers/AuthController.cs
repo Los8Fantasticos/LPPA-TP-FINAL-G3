@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Core.Contracts.Data;
+using Core.Contracts.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,17 +15,21 @@ namespace Api.Controllers
     {
         private readonly IMapper _mapper;
         private readonly ILogger<AuthController> _logger;
+        private readonly IUsersService _usersService;
         private readonly ActionLoggerMiddlewareConfiguration _actionLoggerMiddlewareConfiguration;
 
         public AuthController(
             IMapper mapper,
             ILogger<AuthController> logger,
+            IUsersService usersService,
             ActionLoggerMiddlewareConfiguration actionLoggerMiddlewareConfiguration
             )
         {
             _mapper = mapper;
             _logger = logger;
+            _usersService = usersService;
             _actionLoggerMiddlewareConfiguration = actionLoggerMiddlewareConfiguration;
+            
         }
 
         
