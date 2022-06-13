@@ -11,15 +11,15 @@ using System.Threading.Tasks;
 
 namespace Core.Business.Services
 {
-    public class PrivilegesService : GenericService<Privileges>, IPrivilegesService
+    public class UsersPrivilegesService : GenericService<UsersPrivileges>, IUsersPrivilegesService
     {
-        public PrivilegesService(IUnitOfWork unitOfWork) 
-            : base(unitOfWork, unitOfWork.GetRepository<IPrivilegesRepository>())
+        public UsersPrivilegesService(IUnitOfWork unitOfWork) 
+            : base(unitOfWork, unitOfWork.GetRepository<IUsersPrivilegesRepository>())
         {
             
         }
 
-        public async Task<bool> AddPrivilege(Privileges privilege)
+        public async Task<bool> AddPrivilege(UsersPrivileges privilege)
         {
             if (CreateAsync(privilege).IsCompletedSuccessfully)
             {

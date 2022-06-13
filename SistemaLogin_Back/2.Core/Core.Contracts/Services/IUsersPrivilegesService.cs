@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Core.Contracts.Services
 {
-    public interface IPrivilegesService : IGenericService<Privileges>
+    public interface IUsersPrivilegesService : IGenericService<UsersPrivileges>
     {
         
     }

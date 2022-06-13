@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Core.Contracts.Repositories
 {
-    public interface IPrivilegesRepository : IGenericRepository<Privileges>
+    public interface IUsersPrivilegesRepository : IGenericRepository<UsersPrivileges>
     {
         
     }

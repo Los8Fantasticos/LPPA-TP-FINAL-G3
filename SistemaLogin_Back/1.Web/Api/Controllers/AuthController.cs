@@ -18,7 +18,7 @@ namespace Api.Controllers
     {
         private readonly IMapper _mapper;
         private readonly ILogger<AuthController> _logger;
-        private readonly IPrivilegesService _privilegesService;
+        private readonly IUsersPrivilegesService _privilegesService;
         private readonly IUsersService _usersService;
         private readonly ActionLoggerMiddlewareConfiguration _actionLoggerMiddlewareConfiguration;
 
@@ -26,7 +26,7 @@ namespace Api.Controllers
             IMapper mapper,
             ILogger<AuthController> logger,
             IUsersService usersService,
-            IPrivilegesService privilegesService,
+            IUsersPrivilegesService privilegesService,
             ActionLoggerMiddlewareConfiguration actionLoggerMiddlewareConfiguration
             )
         {
