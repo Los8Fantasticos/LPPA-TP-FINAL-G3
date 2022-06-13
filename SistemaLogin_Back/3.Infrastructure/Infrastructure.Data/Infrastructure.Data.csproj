@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="Repositories\" />
     <Folder Include="TemplatesEmail\" />
     <Folder Include="TypeBuilders\" />
@@ -27,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\2.Core\Core.Contracts\Core.Contracts.csproj" />
+    <ProjectReference Include="..\..\2.Core\Core.Domain\Core.Domain.csproj" />
     <ProjectReference Include="..\..\5.Transversal\Transversal.Extensions\Transversal.Extensions.csproj" />
   </ItemGroup>
 

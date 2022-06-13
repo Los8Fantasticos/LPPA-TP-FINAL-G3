@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Core.Domain.DTO;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Transversal.Extensions;
 
 namespace Infrastructure.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
+    public class ApplicationDbContext : IdentityDbContext<AppUser,IdentityRole,string,IdentityUserClaim<string>, AppUserRoles,IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
