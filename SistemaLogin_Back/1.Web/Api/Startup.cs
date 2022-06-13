@@ -99,6 +99,7 @@ namespace Api
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
+                c.RoutePrefix = String.Empty;
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "UAI LPPA-FINAL API V1");
             });
 
