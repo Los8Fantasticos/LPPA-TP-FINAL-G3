@@ -10,7 +10,7 @@ using Transversal.Extensions;
 
 namespace Infrastructure.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<Users,IdentityRole,string,IdentityUserClaim<string>, AppUserRoles,IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
+    public class ApplicationDbContext : IdentityDbContext<Users,IdentityRole,string,IdentityUserClaim<string>, Privileges,IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {

@@ -11,10 +11,11 @@ namespace Api.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("[controller]")]
-    public class AuthController
+    public class AuthController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly ILogger<AuthController> _logger;
+        private readonly IPrivilegesService _privilegesService;
         private readonly IUsersService _usersService;
         private readonly ActionLoggerMiddlewareConfiguration _actionLoggerMiddlewareConfiguration;
 
@@ -22,12 +23,14 @@ namespace Api.Controllers
             IMapper mapper,
             ILogger<AuthController> logger,
             IUsersService usersService,
+            IPrivilegesService privilegesService,
             ActionLoggerMiddlewareConfiguration actionLoggerMiddlewareConfiguration
             )
         {
             _mapper = mapper;
             _logger = logger;
             _usersService = usersService;
+            _privilegesService = privilegesService;
             _actionLoggerMiddlewareConfiguration = actionLoggerMiddlewareConfiguration;
             
         }
@@ -41,9 +44,6 @@ namespace Api.Controllers
             
             return null;
         }
-
-
-
 
     }
 }

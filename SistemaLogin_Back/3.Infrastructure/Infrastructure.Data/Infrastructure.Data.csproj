@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\" />
     <Folder Include="TemplatesEmail\" />
     <Folder Include="TypeBuilders\" />
   </ItemGroup>

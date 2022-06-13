@@ -89,7 +89,7 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("Core.Domain.DTO.AppUserRoles", b =>
+            modelBuilder.Entity("Core.Domain.DTO.Privileges", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -223,7 +223,7 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Core.Domain.DTO.AppUserRoles", b =>
+            modelBuilder.Entity("Core.Domain.DTO.Privileges", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()

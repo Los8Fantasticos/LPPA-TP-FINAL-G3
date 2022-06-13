@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Core.Domain.DTO
 {
-    public class AppUserRoles : IdentityUserRole<string>
+    public class Privileges : IdentityUserRole<string>
     {
         public int Id { get; set; }
     }
