@@ -1,0 +1,9 @@
+2022-06-13 01:23:42.206 -03:00 [ERR] Error while registering new user.
+AutoMapper.AutoMapperMappingException: Missing type map configuration or unsupported mapping.
+
+Mapping types:
+RegisterRequest -> Users
+Api.Request.RegisterRequest -> Core.Domain.DTO.Users
+   at lambda_method(Closure , Object , Users , ResolutionContext )
+   at Api.Controllers.AuthController.Register(RegisterRequest registerRequest) in C:\Users\pelle\OneDrive\Escritorio\Repos\LPPA-TP-FINAL-G3\SistemaLogin_Back\1.Web\Api\Controllers\AuthController.cs:line 45
+2022-06-13 01:27:24.372 -03:00 [INF] New user with UserName: braiton has been registered succesfully.
