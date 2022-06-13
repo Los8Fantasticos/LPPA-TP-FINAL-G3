@@ -20,6 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using Api.Configurations;
 using Transversal.Extensions;
 using Core.Contracts.Data;
+using Core.Domain.DTO;
 
 namespace Api
 {
@@ -53,8 +54,8 @@ namespace Api
                 .EnableSensitiveDataLogging()
                 .UseLoggerFactory(_loggerFactory)
             );
-
-            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            
+            services.AddIdentity<Users, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = true;
                 options.User.RequireUniqueEmail = true;
@@ -81,7 +82,6 @@ namespace Api
             services.AddSingleton(mapper); // Singleton al Mapper para los controllers (ahi se haria el traspaso de clases)
             services.ConfigureIoC(Configuration); //LLamo a la clase de IoCRegister que contiene IServiceCollection 
             services.ConfigureLogger(Configuration); //Configuramos el Logger. Vamos a guardarlo en un txt, en la base de datos y enviarlo por mail.
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

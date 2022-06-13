@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using Api.Request;
+using AutoMapper;
+using Core.Domain.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,9 @@ namespace Api.Mapping
     {
         public ApiMapping()
         {
-
+            CreateMap<Users, RegisterRequest>();
+            CreateMap<RegisterRequest, Users>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email));
         }
     }
 }

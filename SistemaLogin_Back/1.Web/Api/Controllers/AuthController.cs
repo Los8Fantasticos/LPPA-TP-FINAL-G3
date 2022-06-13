@@ -1,9 +1,12 @@
-﻿using AutoMapper;
+﻿using Api.Request;
+using AutoMapper;
 using Core.Contracts.Data;
 using Core.Contracts.Services;
+using Core.Domain.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace Api.Controllers
@@ -11,7 +14,7 @@ namespace Api.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("[controller]")]
-    public class AuthController
+    public class AuthController:ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly ILogger<AuthController> _logger;
@@ -35,15 +38,21 @@ namespace Api.Controllers
         
         [HttpPost("Register")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(string UserName)
+        public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
-            _logger.LogInformation($"New user with UserName: {UserName} has been registered succesfully.");
-            
-            return null;
+            try
+            {
+                Users user = _mapper.Map<Users>(registerRequest);
+                var result = await _usersService.CreateUserAsync(user, registerRequest.Password);
+                _logger.LogInformation($"New user with UserName: {registerRequest.FirstName + string.Empty + registerRequest.LastName} has been registered succesfully.");
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while registering new user.");
+                return BadRequest(ex.Message);
+            }
         }
-
-
-
-
     }
 }
