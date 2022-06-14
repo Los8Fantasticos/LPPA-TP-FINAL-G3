@@ -30,5 +30,21 @@ namespace Core.Business.Services
             }
             return true;
         }
+
+        public async Task<bool> LoginUserAsync(string email, string password)
+        {       
+            var identityUser = await _userManager.FindByEmailAsync(email);
+            if (identityUser != null && identityUser.EmailConfirmed)
+            {
+                var result = await _signInManager.CheckPasswordSignInAsync(identityUser, password, false);
+                if (result.Succeeded)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            }
+                return false;
+        }
     }
 }
