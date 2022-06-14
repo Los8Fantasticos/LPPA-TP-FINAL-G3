@@ -8,5 +8,6 @@ namespace Core.Domain.DTO
 {
     public class Privileges : IdentityRole
     {
+        
     }
 }
