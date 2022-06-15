@@ -35,10 +35,10 @@ namespace Api.Controllers
             _usersService = usersService;
             _privilegesService = privilegesService;
             _actionLoggerMiddlewareConfiguration = actionLoggerMiddlewareConfiguration;
-            
+
         }
 
-        
+
         [HttpPost("Register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterRequest registerRequest)
@@ -56,6 +56,30 @@ namespace Api.Controllers
                 _logger.LogError(ex, "Error while registering new user.");
                 return BadRequest(ex.Message);
             }
+        }
+
+        //create login endpoint
+        [HttpPost("Login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginRequest loginRequest)
+        {
+            try
+            {
+                var user = await _usersService.LoginUserAsync(loginRequest.username,loginRequest.password);
+                if (user == false)
+                {
+                    _logger.LogInformation($"El usuario: {loginRequest.username} no existe.");
+                    return BadRequest("Usuario inválido");
+                    
+                }
+                return Ok(new {Message = "Logeo exitoso"});
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while logging in.");
+                return BadRequest(ex.Message);
+            }
+
         }
     }
 }

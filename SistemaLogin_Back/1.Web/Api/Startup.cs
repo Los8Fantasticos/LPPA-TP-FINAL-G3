@@ -55,7 +55,7 @@ namespace Api
                 .UseLoggerFactory(_loggerFactory)
             );
             
-            services.AddIdentity<Users, IdentityRole>(options =>
+            services.AddIdentity<Users, Privileges>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = true;
                 options.User.RequireUniqueEmail = true;

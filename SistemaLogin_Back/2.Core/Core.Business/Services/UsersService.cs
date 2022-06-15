@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Core.Business.Services
 {
@@ -33,8 +34,11 @@ namespace Core.Business.Services
 
         public async Task<bool> LoginUserAsync(string email, string password)
         {       
-            var identityUser = await _userManager.FindByEmailAsync(email);
-            if (identityUser != null && identityUser.EmailConfirmed)
+            //var identityUser = await _userManager.FindByEmailAsync(email);
+
+            var identityUser = (await _repository.Get(x => x.Email == email && x.EmailConfirmed)).FirstOrDefault();
+
+            if (identityUser != null)
             {
                 var result = await _signInManager.CheckPasswordSignInAsync(identityUser, password, false);
                 if (result.Succeeded)
