@@ -50,10 +50,21 @@ namespace Api.Controllers
             {
                 return Problem("Error al crear el rol.");
             }
+            _logger.LogInformation($"Registered privilege: {privileges.Id} - {privileges.NormalizedName} succesfully.");
             return Ok();
         }
 
-
-
+        [HttpDelete]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeletePrivilege(string id)
+        {
+            var result = await _privilegesService.DeletePrivilegeAsync(id);
+            if (!result)
+            {
+                return Problem("Error al eliminar el rol.");
+            }
+            _logger.LogInformation($"Deleted privilege: {id} succesfully.");
+            return Ok();
+        }
     }
 }

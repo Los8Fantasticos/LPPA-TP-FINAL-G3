@@ -9,5 +9,6 @@ namespace Core.Contracts.Services
     public interface IPrivilegesService : IGenericService<Privileges>
     {
         public Task<bool> CreatePrivilegeAsync(Privileges privileges);
+        public Task<bool> DeletePrivilegeAsync(string id);
     }
 }
