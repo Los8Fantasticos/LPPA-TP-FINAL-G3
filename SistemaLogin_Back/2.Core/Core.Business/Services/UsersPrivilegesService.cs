@@ -14,16 +14,16 @@ namespace Core.Business.Services
 {
     public class UsersPrivilegesService : GenericService<UsersPrivileges>, IUsersPrivilegesService
     {
-        private readonly UserManager<UsersPrivileges> _userManager;
+        private readonly UserManager<Users> _userManager;
         private readonly RoleManager<Privileges> _roleManager;
-        public UsersPrivilegesService(IUnitOfWork unitOfWork, UserManager<UsersPrivileges> userManager, RoleManager<Privileges> roleManager) 
+        public UsersPrivilegesService(IUnitOfWork unitOfWork, UserManager<Users> userManager, RoleManager<Privileges> roleManager) 
             : base(unitOfWork, unitOfWork.GetRepository<IUsersPrivilegesRepository>())
         {
             _userManager = userManager;
             _roleManager = roleManager;
         }       
         
-        public async Task<bool> AssignPrivilegesToUser(string userId, IEnumerable<string> privileges)
+        public async Task<bool> AssignPrivilegesToUser(string userId, List<string> privileges)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)

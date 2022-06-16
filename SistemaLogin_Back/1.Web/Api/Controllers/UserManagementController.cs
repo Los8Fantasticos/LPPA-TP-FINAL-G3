@@ -78,7 +78,7 @@ namespace Api.Controllers
             }           
         }
 
-        [HttpPut]
+        [HttpPut("Privileges")]
         //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
         public async Task<IActionResult> UpdatePrivilege(PrivilegesRequest privilegesRequest)
@@ -117,11 +117,11 @@ namespace Api.Controllers
                 throw;
             }
         }
-        
-        [HttpPut]
+
+        [HttpPut("AssignPrivilegesToUser")]
         //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
-        public async Task<IActionResult> AssignPrivilegesToUser(Users user, IEnumerable<Privileges> privileges)
+        public async Task<IActionResult> AssignPrivilegesToUser([FromHeader]string userId, [FromBody]List<Privileges> privileges)
         {
             try
             {
@@ -130,7 +130,7 @@ namespace Api.Controllers
                 {
                     privilegesNames.Add(privilege.Name);
                 }
-                var result = await _userPrivilegesService.AssignPrivilegesToUser(user.Id, privilegesNames);
+                var result = await _userPrivilegesService.AssignPrivilegesToUser(userId, privilegesNames);
                 if (!result)
                 {
                     return Problem("Error al asignar los privilegios al usuario.");

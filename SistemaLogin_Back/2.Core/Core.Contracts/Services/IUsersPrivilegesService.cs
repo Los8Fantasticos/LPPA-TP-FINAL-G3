@@ -9,6 +9,6 @@ namespace Core.Contracts.Services
 {
     public interface IUsersPrivilegesService : IGenericService<UsersPrivileges>
     {
-        public Task<bool> AssignPrivilegesToUser(string userId, IEnumerable<string> privileges);
+        public Task<bool> AssignPrivilegesToUser(string userId, List<string> privileges);
     }
 }
