@@ -3,6 +3,7 @@ using Core.Contracts.Services;
 using Core.Domain.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -30,6 +31,22 @@ namespace Core.Business.Services
             }
             return true;
         }
+
+        public async Task<bool> DeleteUserAsync(string id)
+        {
+            var result = await _userManager.DeleteAsync(new Users { Id = id });
+            if (!result.Succeeded)
+            {
+                throw new Exception(result.Errors.ToString());
+            }
+            return true;
+        }
+
+        public async Task<List<Users>> GetUsersAsync()
+        {
+            return (await _repository.Get()).ToList();            
+        }       
+        
 
         public async Task<bool> LoginUserAsync(string email, string password)
         {       

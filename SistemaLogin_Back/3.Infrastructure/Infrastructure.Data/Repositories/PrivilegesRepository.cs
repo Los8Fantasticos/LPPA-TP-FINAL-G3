@@ -6,12 +6,12 @@ using System.Text;
 
 namespace Infrastructure.Data.Repositories
 {
-    public class UsersRepository:GenericRepository<Users>,IUsersRepository
+    public class PrivilegesRepository : GenericRepository<Privileges>, IPrivilegesRepository
     {
-        public UsersRepository(ApplicationDbContext applicationDbContext) 
+        public PrivilegesRepository(ApplicationDbContext applicationDbContext)
             : base(applicationDbContext)
         {
-            
+
         }
     }
 }
