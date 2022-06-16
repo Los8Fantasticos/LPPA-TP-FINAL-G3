@@ -11,7 +11,7 @@ namespace Infrastructure.Data.Repositories
         public UsersRepository(ApplicationDbContext applicationDbContext) 
             : base(applicationDbContext)
         {
+            
         }
-        
     }
 }

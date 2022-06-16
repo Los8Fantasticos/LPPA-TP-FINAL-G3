@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using Api.Request;
 
 namespace Api.Controllers
 {
@@ -42,9 +42,11 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreatePrivilege(Privileges privileges)
+        //[Authorize(Roles = "Admin")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CreatePrivilege(PrivilegesRequest privilegesRequest)
         {
+            Privileges privileges = _mapper.Map<Privileges>(privilegesRequest);
             var result = await _privilegesService.CreatePrivilegeAsync(privileges);
             if (!result)
             {
@@ -55,16 +57,103 @@ namespace Api.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
+        [AllowAnonymous]
         public async Task<IActionResult> DeletePrivilege(string id)
         {
-            var result = await _privilegesService.DeletePrivilegeAsync(id);
-            if (!result)
+            try
             {
-                return Problem("Error al eliminar el rol.");
+                var result = await _privilegesService.DeletePrivilegeAsync(id);
+                if (!result)
+                {
+                    return Problem("Error al eliminar el rol.");
+                }
+                _logger.LogInformation($"Deleted privilege: {id} succesfully.");
+                return Ok();
             }
-            _logger.LogInformation($"Deleted privilege: {id} succesfully.");
-            return Ok();
+            catch (Exception)
+            {
+
+                throw;
+            }           
+        }
+
+        [HttpPut]
+        //[Authorize(Roles = "Admin")]
+        [AllowAnonymous]
+        public async Task<IActionResult> UpdatePrivilege(PrivilegesRequest privilegesRequest)
+        {
+            try
+            {
+                Privileges privileges = _mapper.Map<Privileges>(privilegesRequest);
+
+                if (await _privilegesService.UpdatePrivilegeAsync(privileges) == null)
+                {
+                    return Problem("Error al actualizar el rol.");
+                }
+                _logger.LogInformation($"Updated privilege: {privileges.Id} - {privileges.NormalizedName} succesfully.");
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        [HttpGet("Privileges")]
+        //[Authorize(Roles = "Admin")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPrivileges()
+        {
+            try
+            {   
+                var privileges = await _privilegesService.GetPrivilegesAsync();
+                
+                return Ok(privileges);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        [HttpGet("Privileges/{id}")]
+        //[Authorize(Roles = "Admin")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPrivilegeById(string id)
+        {
+            try
+            {
+                var privilege = await _privilegesService.GetPrivilegeByIdAsync(id);
+                
+                return Ok(privilege);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
+        [HttpGet("Users")]
+        //[Authorize(Roles = "Admin")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetUsers()
+        {
+            try
+            {
+                var users = await _usersService.GetUsersAsync();
+
+                return Ok(users);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

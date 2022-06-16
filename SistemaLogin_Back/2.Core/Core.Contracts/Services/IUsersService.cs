@@ -10,5 +10,6 @@ namespace Core.Contracts.Services
     public interface IUsersService:IGenericService<Users>
     {
         public Task<bool> CreateUserAsync(Users users, string password);
+        public Task<List<Users>> GetUsersAsync();
     }
 }
