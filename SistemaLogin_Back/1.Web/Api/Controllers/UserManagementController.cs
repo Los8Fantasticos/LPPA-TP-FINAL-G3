@@ -119,20 +119,29 @@ namespace Api.Controllers
         }
         
         [HttpPut]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
+        [AllowAnonymous]
         public async Task<IActionResult> AssignPrivilegesToUser(Users user, IEnumerable<Privileges> privileges)
         {
-            var privilegesNames = new List<string>();
-            foreach (var privilege in privileges)
+            try
             {
-                privilegesNames.Add(privilege.Name);
+                var privilegesNames = new List<string>();
+                foreach (var privilege in privileges)
+                {
+                    privilegesNames.Add(privilege.Name);
+                }
+                var result = await _userPrivilegesService.AssignPrivilegesToUser(user.Id, privilegesNames);
+                if (!result)
+                {
+                    return Problem("Error al asignar los privilegios al usuario.");
+                }
+                return Ok();
             }
-            var result = await _userPrivilegesService.AssignPrivilegesToUser(user.Id, privilegesNames);
-            if (!result)
+            catch (Exception)
             {
-                return Problem("Error al asignar los privilegios al usuario.");
+
+                throw;
             }
-            return Ok();
         }
         
         
