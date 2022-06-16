@@ -18,20 +18,5 @@ namespace Core.Business.Services
         {
             
         }
-
-        public async Task<bool> AddPrivilege(UsersPrivileges privilege)
-        {
-            if (CreateAsync(privilege).IsCompletedSuccessfully)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        
-        
-
     }
 }

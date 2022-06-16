@@ -12,5 +12,6 @@ namespace Core.Contracts.Services
         public Task<bool> CreateUserAsync(Users users, string password);
 
         public Task<bool> LoginUserAsync(string email, string password);
+        public Task<List<Users>> GetUsersAsync();
     }
 }

@@ -27,8 +27,7 @@ namespace Api.Controllers
             ILogger<AuthController> logger,
             IUsersService usersService,
             IUsersPrivilegesService privilegesService,
-            ActionLoggerMiddlewareConfiguration actionLoggerMiddlewareConfiguration
-            )
+            ActionLoggerMiddlewareConfiguration actionLoggerMiddlewareConfiguration)
         {
             _mapper = mapper;
             _logger = logger;
