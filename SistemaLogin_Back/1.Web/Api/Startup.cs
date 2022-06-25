@@ -21,6 +21,8 @@ using Api.Configurations;
 using Transversal.Extensions;
 using Core.Contracts.Data;
 using Core.Domain.DTO;
+using Transversal.Helpers.JWT;
+using Api.JwT;
 
 namespace Api
 {
@@ -78,7 +80,7 @@ namespace Api
             });
             IMapper mapper = mappingConfig.CreateMapper();
 
-
+            services.ConfigureJwt(Configuration);
             services.AddSingleton(mapper); // Singleton al Mapper para los controllers (ahi se haria el traspaso de clases)
             services.ConfigureIoC(Configuration); //LLamo a la clase de IoCRegister que contiene IServiceCollection 
             services.ConfigureLogger(Configuration); //Configuramos el Logger. Vamos a guardarlo en un txt, en la base de datos y enviarlo por mail.
