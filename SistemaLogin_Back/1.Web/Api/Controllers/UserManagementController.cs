@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Request;
+using Api.Request.Privileges;
 
 namespace Api.Controllers
 {
@@ -44,7 +45,7 @@ namespace Api.Controllers
         [HttpPost]
         //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
-        public async Task<IActionResult> CreatePrivilege(PrivilegesRequest privilegesRequest)
+        public async Task<IActionResult> CreatePrivilege(PrivilegesPostRequest privilegesRequest)
         {
             Privileges privileges = _mapper.Map<Privileges>(privilegesRequest);
             var result = await _privilegesService.CreatePrivilegeAsync(privileges);
@@ -81,7 +82,7 @@ namespace Api.Controllers
         [HttpPut("Privileges")]
         //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
-        public async Task<IActionResult> UpdatePrivilege(PrivilegesRequest privilegesRequest)
+        public async Task<IActionResult> UpdatePrivilege(PrivilegesPutRequest privilegesRequest)
         {
             try
             {
@@ -121,15 +122,10 @@ namespace Api.Controllers
         [HttpPut("AssignPrivilegesToUser")]
         //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
-        public async Task<IActionResult> AssignPrivilegesToUser([FromHeader]string userId, [FromBody]List<Privileges> privileges)
+        public async Task<IActionResult> AssignPrivilegesToUser([FromHeader]string userId, [FromBody]List<string> privilegesNames)
         {
             try
             {
-                var privilegesNames = new List<string>();
-                foreach (var privilege in privileges)
-                {
-                    privilegesNames.Add(privilege.Name);
-                }
                 var result = await _userPrivilegesService.AssignPrivilegesToUser(userId, privilegesNames);
                 if (!result)
                 {

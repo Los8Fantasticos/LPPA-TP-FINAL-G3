@@ -48,6 +48,8 @@ namespace Core.Business.Services
             IdentityResult addResult = await _userManager.AddToRolesAsync(user, privileges);
             if (!addResult.Succeeded)
             {
+                await _userManager.AddToRolesAsync(user, currentPrivileges);
+
                 return false; //mensaje tipo "Error al agregar privilegios."
             }
 
