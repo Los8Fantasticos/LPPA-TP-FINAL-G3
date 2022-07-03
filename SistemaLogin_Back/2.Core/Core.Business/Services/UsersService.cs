@@ -8,6 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Transversal.Helpers.ResultClasses;
+using Transversal.Helpers.JWT;
+using Core.Domain.Enum;
 
 namespace Core.Business.Services
 {
@@ -15,19 +18,44 @@ namespace Core.Business.Services
     {
         private readonly SignInManager<Users> _signInManager;
         private readonly UserManager<Users> _userManager;
-        public UsersService(IUnitOfWork unitOfWork, SignInManager<Users> signInManager, UserManager<Users> userManager)
+
+        private readonly IJwtBearerTokenHelper _jwtBearerTokenHelper;
+        private readonly ITokenGenerator _refreshTokenFactory;
+        private readonly IRefreshTokenService _refreshTokenService;
+
+        public UsersService(
+            IUnitOfWork unitOfWork,
+            SignInManager<Users> signInManager,
+            UserManager<Users> userManager,
+            IJwtBearerTokenHelper jwtBearerTokenHelper,
+            ITokenGenerator tokenGenerator,
+            IRefreshTokenService refreshTokenService)
             : base(unitOfWork, unitOfWork.GetRepository<IUsersRepository>())
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _jwtBearerTokenHelper = jwtBearerTokenHelper;
+            _refreshTokenFactory = tokenGenerator;
+            _refreshTokenService = refreshTokenService;
         }
 
-        public async Task<bool> CreateUserAsync(Users users, string password)
+        public async Task<bool> CreateUserAsync(Users user, string password)
         {
-            var result = await _userManager.CreateAsync(users, password);
+            var result = await _userManager.CreateAsync(user, password);
             if(!result.Succeeded)
             {
                 throw new Exception(result.Errors.ToString());
+            }
+            var role = PrivilegeEnum.User.ToString();
+            result = await _userManager.AddToRoleAsync(user, role.ToUpper());
+            if (!result.Succeeded)
+            {
+                //_logger.LogInformation("Failed to assign role to new user {error}.", result.Errors.ToJson());
+                await _userManager.DeleteAsync(await _userManager.FindByNameAsync(user.UserName));
+                //_logger.LogInformation("{userName} has been deleted.", user.UserName);
+
+                //return BadRequest(new { Message = "User Role Assignment Failed", Errors = ModelState.SerializeErrors() });
+                return false;
             }
             return true;
         }
@@ -61,7 +89,50 @@ namespace Core.Business.Services
                 else
                     return false;
             }
-                return false;
+            var result2 = await GenerateLoginToken(identityUser);
+
+
+
+            return false;
         }
+        
+        private async Task<bool> GenerateLoginToken(Users user)
+        {
+            //var result = new GenericResult<LoginTokenDto>();
+
+            var role = _userManager.GetRolesAsync(user).Result.FirstOrDefault();
+
+            var bearerToken = _jwtBearerTokenHelper.CreateJwtToken(user.Id, user.UserName, role);
+            if (bearerToken is null)
+            {
+                //result.AddError("TokenError");
+                //return false;
+            }
+
+            var refreshToken = _refreshTokenFactory.GenerateToken();
+            var creationResult = await _refreshTokenService.CreateAsync(user.Id, refreshToken);
+
+            if (!creationResult.Success)
+            {
+                //result.Issues = creationResult.Errors;
+            }
+
+            //var response = new LoginTokenDto
+            //{
+            //    Token = bearerToken,
+            //    RefreshToken = creationResult.Success ? refreshToken : null,
+            //    ValidFrom = _jwtBearerTokenHelper.GetValidFromDate(bearerToken),
+            //    ExpirationDate = _jwtBearerTokenHelper.GetExpirationDate(bearerToken),
+            //    FirstName = user.FirstName,
+            //    LastName = user.LastName,
+            //    UserName = user.UserName,
+            //    Email = user.Email
+            //};
+
+            //result.Data = response;
+            return true;
+        }
+
+
     }
 }

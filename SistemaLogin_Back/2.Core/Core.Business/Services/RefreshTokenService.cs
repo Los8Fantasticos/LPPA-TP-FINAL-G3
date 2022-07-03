@@ -20,7 +20,7 @@ namespace Core.Business.Services
             refreshTokenRepository = unitOfWork.GetRepository<IRefreshTokenRepository>();
             _refreshTokenSettings = refreshTokenSettings;
         }
-
+        
         private TimeSpan Duration => _refreshTokenSettings.Duration;
 
         public async Task<IGenericResult> CreateAsync(string userId, string token)

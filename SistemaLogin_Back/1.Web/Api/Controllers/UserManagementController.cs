@@ -103,8 +103,8 @@ namespace Api.Controllers
         }
 
         [HttpGet("Privileges")]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "User")]
+        //[AllowAnonymous]
         public async Task<IActionResult> GetPrivileges()
         {
             try

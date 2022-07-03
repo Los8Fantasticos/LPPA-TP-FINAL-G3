@@ -18,6 +18,9 @@ namespace Core.Domain.DTO
         public string UserId { get; set; }
         public string Token { get; set; }
         public DateTime Expires { get; set; }
+        
+        public Users Users { get; set; }
+
 
     }
 }

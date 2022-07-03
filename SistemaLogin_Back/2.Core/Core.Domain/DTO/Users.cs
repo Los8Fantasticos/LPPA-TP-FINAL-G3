@@ -8,5 +8,7 @@ namespace Core.Domain.DTO
     public class Users : IdentityUser
     {
         public string Salt { get; set; }
+
+        public virtual ICollection<RefreshToken> UserRefreshTokens { get; set; }
     }
 }
