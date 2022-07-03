@@ -6,6 +6,6 @@ namespace Transversal.Helpers.JWT
 {
     public interface IRefreshTokenSettings
     {
-        public TimeSpan duration { get; set; }
+        public TimeSpan Duration { get; set; }
     }
 }

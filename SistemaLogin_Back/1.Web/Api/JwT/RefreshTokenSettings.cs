@@ -5,7 +5,7 @@ namespace Api.JwT
 {
     public class RefreshTokenSettings : IRefreshTokenSettings
     {
-        public TimeSpan duration { get; set; }
+        public TimeSpan Duration { get; set; }
 
     }
 }
