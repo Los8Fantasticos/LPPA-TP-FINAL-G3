@@ -55,6 +55,16 @@ namespace Core.Business.Services
 
             return true;
         }
-        
+
+        public async Task<IList<string>> GetUserPrivileges(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return null;
+            }
+            return await _userManager.GetRolesAsync(user);
+        }
+
     }
 }

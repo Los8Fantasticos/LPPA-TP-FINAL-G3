@@ -180,5 +180,25 @@ namespace Api.Controllers
                 throw;
             }
         }
+
+        [HttpGet("UserPrivileges")]
+        //[Authorize(Roles = "Admin")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetUserPrivileges([FromHeader] string userId)
+        {
+            try
+            {
+                var result = await _userPrivilegesService.GetUserPrivileges(userId);
+                if (result == null)
+                    return Problem("Error al obtener los privilegios.");
+               
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
