@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Request;
+using Api.Request.Privileges;
 
 namespace Api.Controllers
 {
@@ -44,7 +45,7 @@ namespace Api.Controllers
         [HttpPost]
         //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
-        public async Task<IActionResult> CreatePrivilege(PrivilegesRequest privilegesRequest)
+        public async Task<IActionResult> CreatePrivilege(PrivilegesPostRequest privilegesRequest)
         {
             Privileges privileges = _mapper.Map<Privileges>(privilegesRequest);
             var result = await _privilegesService.CreatePrivilegeAsync(privileges);
@@ -78,10 +79,10 @@ namespace Api.Controllers
             }           
         }
 
-        [HttpPut]
+        [HttpPut("Privileges")]
         //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
-        public async Task<IActionResult> UpdatePrivilege(PrivilegesRequest privilegesRequest)
+        public async Task<IActionResult> UpdatePrivilege(PrivilegesPutRequest privilegesRequest)
         {
             try
             {
@@ -107,10 +108,30 @@ namespace Api.Controllers
         public async Task<IActionResult> GetPrivileges()
         {
             try
-            {   
+            {
                 var privileges = await _privilegesService.GetPrivilegesAsync();
-                
+
                 return Ok(privileges);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpPut("AssignPrivilegesToUser")]
+        //[Authorize(Roles = "Admin")]
+        [AllowAnonymous]
+        public async Task<IActionResult> AssignPrivilegesToUser([FromHeader]string userId, [FromBody]List<string> privilegesNames)
+        {
+            try
+            {
+                var result = await _userPrivilegesService.AssignPrivilegesToUser(userId, privilegesNames);
+                if (!result)
+                {
+                    return Problem("Error al asignar los privilegios al usuario.");
+                }
+                return Ok();
             }
             catch (Exception)
             {
@@ -118,7 +139,8 @@ namespace Api.Controllers
                 throw;
             }
         }
-
+        
+        
         [HttpGet("Privileges/{id}")]
         //[Authorize(Roles = "Admin")]
         [AllowAnonymous]

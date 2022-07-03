@@ -16,8 +16,8 @@ namespace Api.Mapping
             CreateMap<RegisterRequest, Users>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email));
 
-            CreateMap<Privileges, PrivilegesRequest>();
-            CreateMap<PrivilegesRequest, Privileges>()
+            CreateMap<Privileges, PrivilegesPutRequest>();
+            CreateMap<PrivilegesPutRequest, Privileges>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.PrivilegeName));
         }
     }
