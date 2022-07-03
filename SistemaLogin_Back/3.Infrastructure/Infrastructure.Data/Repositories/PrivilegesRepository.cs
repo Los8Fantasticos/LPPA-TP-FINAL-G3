@@ -1,8 +1,8 @@
-﻿using Core.Contracts.Repositories;
-using Core.Domain.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Core.Domain.DTO;
+using Core.Contracts.Repositories;
 
 namespace Infrastructure.Data.Repositories
 {
