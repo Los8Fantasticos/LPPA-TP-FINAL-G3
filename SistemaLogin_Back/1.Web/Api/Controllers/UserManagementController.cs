@@ -149,7 +149,10 @@ namespace Api.Controllers
             try
             {
                 var privilege = await _privilegesService.GetPrivilegeByIdAsync(id);
-                
+
+                if(privilege == null)
+                    return Problem("No existe el privilegio.");
+
                 return Ok(privilege);
             }
             catch (Exception)

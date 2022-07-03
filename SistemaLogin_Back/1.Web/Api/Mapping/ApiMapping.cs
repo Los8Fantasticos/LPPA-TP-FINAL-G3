@@ -1,4 +1,6 @@
 ﻿using Api.Request;
+using Api.Request.Privileges;
+
 using AutoMapper;
 using Core.Domain.DTO;
 using System;
@@ -18,7 +20,16 @@ namespace Api.Mapping
 
             CreateMap<Privileges, PrivilegesPutRequest>();
             CreateMap<PrivilegesPutRequest, Privileges>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.PrivilegeNewName))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.ConcurrencyStamp, opt => opt.MapFrom(src => src.concurrencyStamp));
+
+            CreateMap<Privileges, PrivilegesPostRequest>();
+            CreateMap<PrivilegesPostRequest, Privileges>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.PrivilegeName));
+
+
+
         }
     }
 }

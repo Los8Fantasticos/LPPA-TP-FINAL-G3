@@ -1,1 +1,0 @@
-2022-06-26 01:20:07.009 -03:00 [INF] Registered privilege: 631dafdb-3d2a-4611-88d2-3362eb77188f - JUAN succesfully.
