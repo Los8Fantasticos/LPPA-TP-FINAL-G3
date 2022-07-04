@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Core.Domain.DTO;
 using Core.Contracts.Repositories;
+using Core.Domain.ApplicationModels;
 
 namespace Infrastructure.Data.Repositories
 {

@@ -1,6 +1,6 @@
 ﻿using Core.Contracts.Repositories;
 using Core.Contracts.Services;
-using Core.Domain.DTO;
+using Core.Domain.ApplicationModels;
 
 using Microsoft.AspNetCore.Identity;
 

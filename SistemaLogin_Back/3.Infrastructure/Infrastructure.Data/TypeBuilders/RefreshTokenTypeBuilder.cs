@@ -1,4 +1,4 @@
-﻿using Core.Domain.DTO;
+﻿using Core.Domain.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;

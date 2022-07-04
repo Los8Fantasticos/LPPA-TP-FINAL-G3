@@ -27,13 +27,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Response\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\3.Infrastructure\Infrastructure.Data\Infrastructure.Data.csproj" />
     <ProjectReference Include="..\..\4.IoC\IoC.Resolver\IoC.Resolver.csproj" />
     <ProjectReference Include="..\..\Transversal.Helpers\Transversal.Helpers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Response\" />
   </ItemGroup>
 
 

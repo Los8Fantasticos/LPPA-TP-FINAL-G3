@@ -1,5 +1,5 @@
 ﻿using Core.Contracts.Repositories;
-using Core.Domain.DTO;
+using Core.Domain.ApplicationModels;
 using System;
 using System.Collections.Generic;
 using System.Text;

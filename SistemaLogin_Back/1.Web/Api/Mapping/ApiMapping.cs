@@ -2,7 +2,7 @@
 using Api.Request.Privileges;
 
 using AutoMapper;
-using Core.Domain.DTO;
+using Core.Domain.ApplicationModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
