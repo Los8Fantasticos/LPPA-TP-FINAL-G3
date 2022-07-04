@@ -41,23 +41,36 @@ namespace Core.Business.Services
 
         public async Task<bool> CreateUserAsync(Users user, string password)
         {
-            var result = await _userManager.CreateAsync(user, password);
-            if(!result.Succeeded)
+            try
             {
-                throw new Exception(result.Errors.ToString());
-            }
-            var role = PrivilegeEnum.User.ToString();
-            result = await _userManager.AddToRoleAsync(user, role.ToUpper());
-            if (!result.Succeeded)
-            {
-                //_logger.LogInformation("Failed to assign role to new user {error}.", result.Errors.ToJson());
-                await _userManager.DeleteAsync(await _userManager.FindByNameAsync(user.UserName));
-                //_logger.LogInformation("{userName} has been deleted.", user.UserName);
+                var result = await _userManager.CreateAsync(user, password);
+                if (!result.Succeeded)
+                {
+                    string error = string.Empty;
+                    foreach (var item in result.Errors)
+                    {
+                        error = error + " siguiente error: " +item.Code;
+                    }
+                    throw new Exception(error);
+                }
+                var role = PrivilegeEnum.User.ToString();
+                result = await _userManager.AddToRoleAsync(user, role.ToUpper());
+                if (!result.Succeeded)
+                {
+                    //_logger.LogInformation("Failed to assign role to new user {error}.", result.Errors.ToJson());
+                    await _userManager.DeleteAsync(await _userManager.FindByNameAsync(user.UserName));
+                    //_logger.LogInformation("{userName} has been deleted.", user.UserName);
 
-                //return BadRequest(new { Message = "User Role Assignment Failed", Errors = ModelState.SerializeErrors() });
-                return false;
+                    //return BadRequest(new { Message = "User Role Assignment Failed", Errors = ModelState.SerializeErrors() });
+                    return false;
+                }
+                return true;
             }
-            return true;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
 
         public async Task<bool> DeleteUserAsync(string id)
