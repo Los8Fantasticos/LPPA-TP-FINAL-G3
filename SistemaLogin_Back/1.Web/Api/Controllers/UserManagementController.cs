@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Core.Contracts.Data;
 using Core.Contracts.Services;
-using Core.Domain.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +10,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Request;
 using Api.Request.Privileges;
+using Core.Domain.ApplicationModels;
 
 namespace Api.Controllers
 {
+    [Authorize]
     [Produces("application/json")]
     [ApiController]
     [Route("[controller]")]

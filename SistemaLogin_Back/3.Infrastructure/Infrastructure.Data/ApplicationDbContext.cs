@@ -1,4 +1,4 @@
-﻿using Core.Domain.DTO;
+﻿using Core.Domain.ApplicationModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

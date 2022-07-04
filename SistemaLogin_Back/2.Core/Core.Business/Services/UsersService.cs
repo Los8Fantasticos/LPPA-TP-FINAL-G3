@@ -1,6 +1,5 @@
 ﻿using Core.Contracts.Repositories;
 using Core.Contracts.Services;
-using Core.Domain.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -11,6 +10,8 @@ using System.Threading.Tasks;
 using Transversal.Helpers.ResultClasses;
 using Transversal.Helpers.JWT;
 using Core.Domain.Enum;
+using Core.Domain.ApplicationModels;
+using Core.Domain.DTOs;
 
 namespace Core.Business.Services
 {
@@ -41,23 +42,37 @@ namespace Core.Business.Services
 
         public async Task<bool> CreateUserAsync(Users user, string password)
         {
-            var result = await _userManager.CreateAsync(user, password);
-            if(!result.Succeeded)
+            try
             {
-                throw new Exception(result.Errors.ToString());
-            }
-            var role = PrivilegeEnum.User.ToString();
-            result = await _userManager.AddToRoleAsync(user, role.ToUpper());
-            if (!result.Succeeded)
-            {
-                //_logger.LogInformation("Failed to assign role to new user {error}.", result.Errors.ToJson());
-                await _userManager.DeleteAsync(await _userManager.FindByNameAsync(user.UserName));
-                //_logger.LogInformation("{userName} has been deleted.", user.UserName);
+                var result = await _userManager.CreateAsync(user, password);
+                if (!result.Succeeded)
+                {
+                    string Errores = string.Join("\n", result.Errors.Select(p => p.Description));      
+                    throw new Exception(Errores);
+                }
+                var role = PrivilegeEnum.User.ToString();
+                result = await _userManager.AddToRoleAsync(user, role.ToUpper());
+                if (!result.Succeeded)
+                {
+                    //_logger.LogInformation("Failed to assign role to new user {error}.", result.Errors.ToJson());
+                    await _userManager.DeleteAsync(await _userManager.FindByNameAsync(user.UserName));
+                    //_logger.LogInformation("{userName} has been deleted.", user.UserName);
 
-                //return BadRequest(new { Message = "User Role Assignment Failed", Errors = ModelState.SerializeErrors() });
-                return false;
+                    //return BadRequest(new { Message = "User Role Assignment Failed", Errors = ModelState.SerializeErrors() });
+                    return false;
+                }
+                return true;
             }
-            return true;
+            catch (InvalidOperationException ex) //Si cae a esta exepción es porque no existe el rol user en la base...
+            {
+                await _userManager.DeleteAsync(await _userManager.FindByNameAsync(user.UserName));
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
 
         public async Task<bool> DeleteUserAsync(string id)
@@ -76,37 +91,29 @@ namespace Core.Business.Services
         }       
         
 
-        public async Task<bool> LoginUserAsync(string email, string password)
-        {       
+        public async Task<IGenericResult<LoginTokenDto>> LoginUserAsync(string email, string password)
+        {
             var identityUser = await _userManager.FindByEmailAsync(email);
-            if (identityUser != null && identityUser.EmailConfirmed)
+            if (identityUser != null && identityUser.EmailConfirmed /*&& identityUser.Active //Mas adelante agregar active*/)
             {
-                var result = await _signInManager.CheckPasswordSignInAsync(identityUser, password, false);
-                if (result.Succeeded)
-                {
-                    return true;
-                }
-                else
-                    return false;
+                var result = await _userManager.CheckPasswordAsync(identityUser, password);
+                return result ? await GenerateLoginToken(identityUser) : new GenericResult<LoginTokenDto>("InvalidCredentials");
             }
-            var result2 = await GenerateLoginToken(identityUser);
-
-
-
-            return false;
+            //Si cayó aca es porque no existe el usuario o no esta confirmado el email.
+            return identityUser.EmailConfirmed ? new GenericResult<LoginTokenDto>("UserNotExist") : new GenericResult<LoginTokenDto>("UserNotConfirmed");
         }
         
-        private async Task<bool> GenerateLoginToken(Users user)
+        private async Task<IGenericResult<LoginTokenDto>> GenerateLoginToken(Users user)
         {
-            //var result = new GenericResult<LoginTokenDto>();
+            var result = new GenericResult<LoginTokenDto>();
 
             var role = _userManager.GetRolesAsync(user).Result.FirstOrDefault();
 
             var bearerToken = _jwtBearerTokenHelper.CreateJwtToken(user.Id, user.UserName, role);
             if (bearerToken is null)
             {
-                //result.AddError("TokenError");
-                //return false;
+                result.AddError("TokenError");
+                return result;
             }
 
             var refreshToken = _refreshTokenFactory.GenerateToken();
@@ -114,23 +121,21 @@ namespace Core.Business.Services
 
             if (!creationResult.Success)
             {
-                //result.Issues = creationResult.Errors;
+                result.Issues = creationResult.Errors;
             }
 
-            //var response = new LoginTokenDto
-            //{
-            //    Token = bearerToken,
-            //    RefreshToken = creationResult.Success ? refreshToken : null,
-            //    ValidFrom = _jwtBearerTokenHelper.GetValidFromDate(bearerToken),
-            //    ExpirationDate = _jwtBearerTokenHelper.GetExpirationDate(bearerToken),
-            //    FirstName = user.FirstName,
-            //    LastName = user.LastName,
-            //    UserName = user.UserName,
-            //    Email = user.Email
-            //};
+            var response = new LoginTokenDto
+            {
+                Token = bearerToken,
+                RefreshToken = creationResult.Success ? refreshToken : null,
+                ValidFrom = _jwtBearerTokenHelper.GetValidFromDate(bearerToken),
+                ExpirationDate = _jwtBearerTokenHelper.GetExpirationDate(bearerToken),
+                UserName = user.UserName,
+                Email = user.Email
+            };
 
-            //result.Data = response;
-            return true;
+            result.Data = response;
+            return result;
         }
 
 

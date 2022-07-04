@@ -20,9 +20,9 @@ using Microsoft.EntityFrameworkCore;
 using Api.Configurations;
 using Transversal.Extensions;
 using Core.Contracts.Data;
-using Core.Domain.DTO;
 using Transversal.Helpers.JWT;
 using Api.JwT;
+using Core.Domain.ApplicationModels;
 
 namespace Api
 {

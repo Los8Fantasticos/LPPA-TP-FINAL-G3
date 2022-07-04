@@ -1,12 +1,14 @@
 ﻿using Api.Request;
 using AutoMapper;
+using Core.Business.Services;
 using Core.Contracts.Data;
 using Core.Contracts.Services;
-using Core.Domain.DTO;
+using Core.Domain.ApplicationModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Api.Controllers
@@ -64,14 +66,33 @@ namespace Api.Controllers
         {
             try
             {
-                var user = await _usersService.LoginUserAsync(loginRequest.username,loginRequest.password);
-                if (user == false)
+                var result = await _usersService.LoginUserAsync(loginRequest.username,loginRequest.password);
+
+                if (!result.Success)
                 {
-                    _logger.LogInformation($"El usuario: {loginRequest.username} no existe.");
-                    return BadRequest("Usuario inválido");
-                    
+                    switch (result.Errors.First())
+                    {
+                        case "InvalidCredentials":
+                            return BadRequest(new { Message = "El usuario y/o contraseña es incorrecto" });
+                        case "TokenError":
+                            return StatusCode(500, "Bearer token couldn't be created");
+                        case "UserNotExist":
+                            return BadRequest(new { Message = "El usuario no existe" });
+                        case "UserNotConfirmed":
+                            return BadRequest(new { Message = "El usuario no confirmó su email" });
+                    }
                 }
-                return Ok(new {Message = "Logeo exitoso"});
+
+                _logger.LogInformation("{userName} has logged in", result.Data.UserName);
+
+                if (result.Issues.Count > 0)
+                {
+                    _logger.LogInformation("{ServiceName}.{MethodName} failed. {Errors}",
+                        nameof(RefreshTokenService),
+                        result.Issues);
+                }
+
+                return Ok(result.Data);
             }
             catch (Exception ex)
             {

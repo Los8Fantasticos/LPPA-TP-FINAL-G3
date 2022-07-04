@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Core.Domain.DTO
+namespace Core.Domain.ApplicationModels
 {
     public class Users : IdentityUser
     {
