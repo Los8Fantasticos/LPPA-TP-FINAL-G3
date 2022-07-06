@@ -73,10 +73,10 @@ namespace Api.Controllers
                 _logger.LogInformation($"Deleted privilege: {id} succesfully.");
                 return Ok();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                _logger.LogError($"Error in DeletePrivileges"+ ex.Message);
+                return Problem(ex.Message);
             }           
         }
 
@@ -104,7 +104,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("Privileges")]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "Administrador")]
         //[AllowAnonymous]
         public async Task<IActionResult> GetPrivileges()
         {

@@ -3,7 +3,9 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Linq;
 using Transversal.Helpers.JWT;
+using System.Collections.Generic;
 
 namespace Api.JwT
 {
@@ -38,18 +40,31 @@ namespace Api.JwT
 
         #endregion
 
-        public string CreateJwtToken(string userId, string userName, string role, string participantId = "-1")
+        public string CreateJwtToken(string userId, string userName, List<string> role, string participantId = "-1")
         {
             try
             {
-                var claims = new Claim[]
+                List<Claim> claims = new List<Claim>
                 {
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim("ParticipantId", participantId),
-                new Claim(ClaimTypes.Name, userName),
-                new Claim(JwtRegisteredClaimNames.Iat, IssuedAt.ToString(), nameof(DateTime)),
-                new Claim(ClaimTypes.Role, role)
+                    new Claim(ClaimTypes.NameIdentifier, userId),
+                    new Claim("ParticipantId", participantId),
+                    new Claim(ClaimTypes.Name, userName),
+                    new Claim(JwtRegisteredClaimNames.Iat, IssuedAt.ToString(), nameof(DateTime)),
                 };
+                claims.AddRange(role.Select(x => new Claim(ClaimTypes.Role, x)));
+
+                //var claims = new Claim[]
+                //{
+                //new Claim(ClaimTypes.NameIdentifier, userId),
+                //new Claim("ParticipantId", participantId),
+                //new Claim(ClaimTypes.Name, userName),
+                //new Claim(JwtRegisteredClaimNames.Iat, IssuedAt.ToString(), nameof(DateTime)),
+                //new role.ForEach(x=> new Claim(ClaimTypes.Role ,x.ToString()))
+                //};
+                //claims.
+                
+
+                
 
                 var securityToken = new JwtSecurityToken(
                     issuer: _jwtBearerTokenSettings.Issuer,

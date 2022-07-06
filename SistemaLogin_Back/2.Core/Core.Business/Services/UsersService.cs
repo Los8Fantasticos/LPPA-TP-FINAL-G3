@@ -94,22 +94,25 @@ namespace Core.Business.Services
         public async Task<IGenericResult<LoginTokenDto>> LoginUserAsync(string email, string password)
         {
             var identityUser = await _userManager.FindByEmailAsync(email);
-            if (identityUser != null && identityUser.EmailConfirmed /*&& identityUser.Active //Mas adelante agregar active*/)
+            
+            if (identityUser is null) return new GenericResult<LoginTokenDto>("UserNotExist");
+            
+            if (identityUser.EmailConfirmed /*&& identityUser.Active //Mas adelante agregar active*/)
             {
                 var result = await _userManager.CheckPasswordAsync(identityUser, password);
                 return result ? await GenerateLoginToken(identityUser) : new GenericResult<LoginTokenDto>("InvalidCredentials");
             }
-            //Si cayó aca es porque no existe el usuario o no esta confirmado el email.
-            return identityUser.EmailConfirmed ? new GenericResult<LoginTokenDto>("UserNotExist") : new GenericResult<LoginTokenDto>("UserNotConfirmed");
+            else
+                return new GenericResult<LoginTokenDto>("UserNotConfirmed");    
         }
         
         private async Task<IGenericResult<LoginTokenDto>> GenerateLoginToken(Users user)
         {
             var result = new GenericResult<LoginTokenDto>();
 
-            var role = _userManager.GetRolesAsync(user).Result.FirstOrDefault();
+            var role = await _userManager.GetRolesAsync(user);
 
-            var bearerToken = _jwtBearerTokenHelper.CreateJwtToken(user.Id, user.UserName, role);
+            var bearerToken = _jwtBearerTokenHelper.CreateJwtToken(user.Id, user.UserName, role.ToList());
             if (bearerToken is null)
             {
                 result.AddError("TokenError");

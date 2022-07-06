@@ -6,7 +6,7 @@ namespace Transversal.Helpers.JWT
 {
     public interface IJwtBearerTokenHelper
     {
-        string CreateJwtToken(string userId, string userName, string role, string participantId = "-1");
+        string CreateJwtToken(string userId, string userName, List<string> role, string participantId = "-1");
 
         string CreateJwtToken(string payloadData, string base64SecretKey);
 

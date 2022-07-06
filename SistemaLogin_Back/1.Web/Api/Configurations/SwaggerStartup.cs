@@ -13,7 +13,7 @@ namespace Api.Configurations
         {
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("AsambleasVirtualesAPISpecification", new OpenApiInfo { Title = "AsambleasVirtuales API", Version = "1" });
+                c.SwaggerDoc("SistemaLoginAPISpecification", new OpenApiInfo { Title = "SistemaLogin API", Version = "1" });
                 var securityScheme = new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
