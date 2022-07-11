@@ -1,4 +1,6 @@
-﻿using IoC.Resolver.Register;
+﻿using Core.Business.Services;
+using Core.Contracts.Services;
+using IoC.Resolver.Register;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -14,6 +16,7 @@ namespace IoC.Resolver
             services.RegisterDataLayer(configuration);
             services.RegisterUnitOfWork();
             services.RegisterBusinessLayer();
+            services.AddTransient<IEmailService, EmailService>();
             return services;
         }
     }

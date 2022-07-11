@@ -66,7 +66,7 @@ namespace Api.Controllers
         {
             try
             {
-                var result = await _usersService.LoginUserAsync(loginRequest.username,loginRequest.password);
+                var result = await _usersService.LoginUserAsync(loginRequest.username, loginRequest.password);
 
                 if (!result.Success)
                 {
@@ -101,5 +101,8 @@ namespace Api.Controllers
             }
 
         }
+        #region Helpers
+        
+        #endregion
     }
 }

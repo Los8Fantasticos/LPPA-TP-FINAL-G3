@@ -23,6 +23,8 @@ using Core.Contracts.Data;
 using Transversal.Helpers.JWT;
 using Api.JwT;
 using Core.Domain.ApplicationModels;
+using Transversal.EmailService.SendGrid;
+using Transversal.EmailService;
 
 namespace Api
 {
@@ -61,18 +63,18 @@ namespace Api
             {
                 options.SignIn.RequireConfirmedAccount = true;
                 options.User.RequireUniqueEmail = true;
-                options.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
+                //options.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 6;
             })
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 
             services.AddConfig<ActionLoggerMiddlewareConfiguration>(Configuration, nameof(ActionLoggerMiddlewareConfiguration));
-
+            services.AddConfig<EmailSendGridConfiguration>(Configuration, nameof(EmailSendGridConfiguration));
 
             var mappingConfig = new MapperConfiguration(mc =>
             {

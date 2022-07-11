@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Transversal.EmailService.SendGrid;
 
 namespace Transversal.EmailService
 {
     public class EmailConfiguration
     {
-        public string From { get; set; }
-        public string SmtpServer { get; set; }
-        public int Port { get; set; }
-        public string UserName { get; set; }
-        public string Password { get; set; }
-        public bool UseSsl { get; set; }
-        public string DisplayName { get; set; }
+        public string Type { get; set; }
+        public EmailSendGridConfiguration EmailSendGridConfiguration { get; set; }
+        public EmailSMTPConfiguration EmailSMTPConfiguration { get; set; }
+        public bool TestEnabled { get; set; }
     }
 }

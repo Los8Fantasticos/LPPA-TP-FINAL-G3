@@ -23,6 +23,7 @@ namespace Core.Business.Services
         private readonly IJwtBearerTokenHelper _jwtBearerTokenHelper;
         private readonly ITokenGenerator _refreshTokenFactory;
         private readonly IRefreshTokenService _refreshTokenService;
+        private readonly IEmailService _emailService;
 
         public UsersService(
             IUnitOfWork unitOfWork,
@@ -30,7 +31,8 @@ namespace Core.Business.Services
             UserManager<Users> userManager,
             IJwtBearerTokenHelper jwtBearerTokenHelper,
             ITokenGenerator tokenGenerator,
-            IRefreshTokenService refreshTokenService)
+            IRefreshTokenService refreshTokenService,
+            IEmailService emailService)
             : base(unitOfWork, unitOfWork.GetRepository<IUsersRepository>())
         {
             _signInManager = signInManager;
@@ -38,6 +40,7 @@ namespace Core.Business.Services
             _jwtBearerTokenHelper = jwtBearerTokenHelper;
             _refreshTokenFactory = tokenGenerator;
             _refreshTokenService = refreshTokenService;
+            _emailService = emailService;
         }
 
         public async Task<bool> CreateUserAsync(Users user, string password)
@@ -61,6 +64,7 @@ namespace Core.Business.Services
                     //return BadRequest(new { Message = "User Role Assignment Failed", Errors = ModelState.SerializeErrors() });
                     return false;
                 }
+                await _emailService.RegistrationEmailAsync(user);
                 return true;
             }
             catch (InvalidOperationException ex) //Si cae a esta exepción es porque no existe el rol user en la base...

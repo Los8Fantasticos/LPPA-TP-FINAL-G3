@@ -16,8 +16,8 @@ namespace Transversal.EmailService.SendGrid
     public class EmailSendgridSender
     {
         private readonly EmailSendGridConfiguration _emailConfig;
-        private readonly ILogger<EmailSendgridSender> _logger;
-        public EmailSendgridSender(EmailSendGridConfiguration emailConfig, ILogger<EmailSendgridSender> _logger)
+        //private readonly ILogger<EmailSendgridSender> _logger;
+        public EmailSendgridSender(EmailSendGridConfiguration emailConfig)
         {
             _emailConfig = emailConfig;
         }
@@ -61,7 +61,7 @@ namespace Transversal.EmailService.SendGrid
 
             string sendGridId = Guid.NewGuid().ToString();
             emailMessage.AddCustomArg("message_id", sendGridId);
-            _logger.LogInformation("CreateEmailMessage Succeeded");
+            //_logger.LogInformation("CreateEmailMessage Succeeded");
             return (emailMessage, sendGridId);
         }
 

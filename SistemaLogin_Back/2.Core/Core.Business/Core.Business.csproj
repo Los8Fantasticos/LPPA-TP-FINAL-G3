@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\5.Transversal\Transversal.EmailService\Transversal.EmailService.csproj" />
     <ProjectReference Include="..\Core.Contracts\Core.Contracts.csproj" />
   </ItemGroup>
 
