@@ -65,15 +65,12 @@ namespace Core.Business.Services
                     return false;
                 }
                 await _emailService.RegistrationEmailAsync(user);
+                //await _userManager.DeleteAsync(await _userManager.FindByNameAsync(user.UserName));
                 return true;
             }
-            catch (InvalidOperationException ex) //Si cae a esta exepción es porque no existe el rol user en la base...
+            catch (InvalidOperationException ex) when (ex is Exception) //Si cae a esta exepción es porque no existe el rol user en la base...
             {
                 await _userManager.DeleteAsync(await _userManager.FindByNameAsync(user.UserName));
-                throw ex;
-            }
-            catch (Exception ex)
-            {
                 throw ex;
             }
 

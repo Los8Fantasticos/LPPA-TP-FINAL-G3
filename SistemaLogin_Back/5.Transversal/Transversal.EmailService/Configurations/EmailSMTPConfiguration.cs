@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Transversal.EmailService
+namespace Transversal.EmailService.Configurations
 {
     public class EmailSMTPConfiguration
     {

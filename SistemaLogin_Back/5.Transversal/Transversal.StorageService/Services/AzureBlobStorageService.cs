@@ -65,7 +65,7 @@ namespace Transversal.StorageService.Services
 
                 BlobContainerClient containerClient = new BlobContainerClient(storageConnection, containerName);
                 BlobClient blobClient = containerClient.GetBlobClient(fileFullPath);
-                if (blobClient.ExistsAsync().Result)
+                if ((await blobClient.ExistsAsync()))
                 {
                     using (var ms = new MemoryStream())
                     {

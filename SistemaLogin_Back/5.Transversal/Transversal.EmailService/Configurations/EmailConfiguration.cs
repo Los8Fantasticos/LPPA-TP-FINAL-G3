@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Transversal.EmailService.SendGrid;
 
-namespace Transversal.EmailService
+namespace Transversal.EmailService.Configurations
 {
     public class EmailConfiguration
     {

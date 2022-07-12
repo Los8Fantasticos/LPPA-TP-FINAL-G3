@@ -23,8 +23,8 @@ using Core.Contracts.Data;
 using Transversal.Helpers.JWT;
 using Api.JwT;
 using Core.Domain.ApplicationModels;
-using Transversal.EmailService.SendGrid;
-using Transversal.EmailService;
+using Transversal.Helpers;
+using Transversal.EmailService.Configurations;
 
 namespace Api
 {
@@ -72,16 +72,18 @@ namespace Api
             })
             .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
-
+            //var r = new EmailSendGridConfiguration();
+            //var result = r.GetType().GetFullNameSections();
+            
             services.AddConfig<ActionLoggerMiddlewareConfiguration>(Configuration, nameof(ActionLoggerMiddlewareConfiguration));
-            services.AddConfig<EmailSendGridConfiguration>(Configuration, nameof(EmailSendGridConfiguration));
-
+            
             var mappingConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new ApiMapping());
             });
             IMapper mapper = mappingConfig.CreateMapper();
 
+            services.AddHttpClient();
             services.ConfigureJwt(Configuration);
             services.ConfigureSwagger();
             services.AddSingleton(mapper); // Singleton al Mapper para los controllers (ahi se haria el traspaso de clases)
