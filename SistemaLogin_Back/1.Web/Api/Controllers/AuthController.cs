@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Transversal.Extensions;
 
 namespace Api.Controllers
 {
@@ -48,6 +49,19 @@ namespace Api.Controllers
             {
                 Users user = _mapper.Map<Users>(registerRequest);
                 var result = await _usersService.CreateUserAsync(user, registerRequest.Password);
+                if (!result.Data.IsRegistred)
+                {
+                    _logger.LogInformation("Failed to create new user {errors}", result.Errors.ToJson());
+
+                    if (result.Data.Code.Any(e => (e == "DuplicateUserName" || e == "DuplicateEmail")))
+                    {
+                        return Conflict(new { Message = "Duplicated User Or Duplicated Email", Errors = ModelState.SerializeErrors() });
+                    }
+
+                    return Conflict(new { Message = "User Registration Failed", Errors = ModelState.SerializeErrors() });
+                }
+
+
                 _logger.LogInformation($"New user with UserName: {registerRequest.FirstName + string.Empty + registerRequest.LastName} has been registered succesfully.");
 
                 return Ok();
@@ -101,8 +115,41 @@ namespace Api.Controllers
             }
 
         }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+                {
+                    ModelState.AddModelError(string.Empty, $"{nameof(userId)} and {nameof(token)} are required.");
+                    return BadRequest(ModelState.SerializeErrors());
+                }
+
+                var result = await _usersService.ConfirmUserEmailAsync(userId, token);
+                if (!result.Succeeded)
+                {
+                    _logger.LogInformation("Email confirmation failed: {errors}", result.Errors.ToJson());
+                    ModelState.AddIdentityResultErrors(result);
+                    return BadRequest(new { Message = "Email confirmation failed.", Errors = ModelState.SerializeErrors() });
+                }
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
+
         #region Helpers
-        
+
         #endregion
     }
 }

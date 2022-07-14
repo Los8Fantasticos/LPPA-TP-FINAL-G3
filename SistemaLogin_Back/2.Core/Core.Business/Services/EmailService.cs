@@ -22,24 +22,27 @@ namespace Core.Business.Services
         private readonly UserManager<Users> _userManager;
         private readonly EmailSendGridConfiguration _emailSendGridConfiguration;
         private readonly IGenericEmailFactory _genericEmailFactory;
+        private readonly FrontConfiguration _frontConfiguration;
 
         public EmailService(
             ILogger<EmailService> logger,
             UserManager<Users> userManager,
             EmailSendGridConfiguration emailSendGridConfiguration,
-            IGenericEmailFactory GenericEmailFactory
+            IGenericEmailFactory GenericEmailFactory,
+            FrontConfiguration frontConfiguration
             )
         {
             _logger = logger;
             _userManager = userManager;
             _emailSendGridConfiguration = emailSendGridConfiguration;
             _genericEmailFactory = GenericEmailFactory;
+            _frontConfiguration = frontConfiguration;
         }
 
         public async Task RegistrationEmailAsync(Users user)
         {
             string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            string url = $"https://localhost:44308/Auth/Confirm?userId={user.Id}&token={HttpUtility.UrlEncode(token)}";
+            string url = $"{_frontConfiguration.ConfirmAccountPage}?userId={user.Id}&token={HttpUtility.UrlEncode(token)}";
             await SendEmailRegisterUser(user, url);
         }
 
@@ -59,10 +62,10 @@ namespace Core.Business.Services
 
             string body = HtmlDocumentHelper.GetHtmlDocument("Register.html", null, new List<string> { url });
             message.Content = body;
-            await SendEmailAsync(user.Email, message);
+            await SendEmailAsync(message);
         }
         
-        private async Task<string> SendEmailAsync(string toEmail, Message message, IFormFileCollection files = null)
+        private async Task<string> SendEmailAsync(Message message, IFormFileCollection files = null)
         {
             var EmailService = _genericEmailFactory.GetDefault();
             var result = await EmailService.SendEmailAsync(message);

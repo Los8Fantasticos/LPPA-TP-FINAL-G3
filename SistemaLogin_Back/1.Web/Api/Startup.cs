@@ -75,6 +75,7 @@ namespace Api
             //var r = new EmailSendGridConfiguration();
             //var result = r.GetType().GetFullNameSections();
             
+            services.AddConfig<FrontConfiguration>(Configuration, nameof(FrontConfiguration));
             services.AddConfig<ActionLoggerMiddlewareConfiguration>(Configuration, nameof(ActionLoggerMiddlewareConfiguration));
             
             var mappingConfig = new MapperConfiguration(mc =>

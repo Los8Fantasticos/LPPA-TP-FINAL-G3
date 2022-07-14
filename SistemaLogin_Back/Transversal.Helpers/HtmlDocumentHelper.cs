@@ -25,7 +25,7 @@ namespace Transversal.Helpers
             {
                 body = sr.ReadToEnd();
             }
-            replace.ForEach(x => { body = body.Replace(x, "{"+count+"}"); count++; });
+            replace.ForEach(x => { body = body.Replace("{"+count+"}",x); count++; });
 
             return body;
         }
