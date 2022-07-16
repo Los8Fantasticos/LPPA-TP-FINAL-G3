@@ -4,6 +4,7 @@ using Core.Business.Services;
 using Core.Contracts.Data;
 using Core.Contracts.Services;
 using Core.Domain.ApplicationModels;
+using Core.Domain.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -145,6 +146,39 @@ namespace Api.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(string userName)
+        {
+            try
+            {
+                await _usersService.ForgotPasswordGenerateToken(userName);
+                return Ok();
+            }
+            catch (Exception)
+            { 
+                throw;
+            }
+           
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest model)
+        {
+            try
+            {
+                var modelDto=_mapper.Map<ChangePasswordDto>(model);
+                await _usersService.ChangePasswordGenerateToken(modelDto);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
 
 

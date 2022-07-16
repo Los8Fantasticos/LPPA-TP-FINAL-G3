@@ -13,6 +13,7 @@ using Core.Domain.Enum;
 using Core.Domain.ApplicationModels;
 using Core.Domain.DTOs;
 using AutoMapper;
+using Transversal.Extensions;
 
 namespace Core.Business.Services
 {
@@ -116,7 +117,41 @@ namespace Core.Business.Services
             return await _userManager.ConfirmEmailAsync(identityUser ?? throw new Exception("Ocurrió un error al confirmar el usuario"), token);
         }
 
+        public async Task ForgotPasswordGenerateToken(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null || !user.EmailConfirmed /*|| !user.Active*/)
+            {
+                throw new Exception("El usuario no existe o su email no está confirmado");
+            }
 
+            await _emailService.ForgotPasswordSendEmail(user);
+        }
+
+        public async Task ChangePasswordGenerateToken(ChangePasswordDto changePasswordDto)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(changePasswordDto.UserId);
+                if (user == null)
+                {
+                    throw new Exception("UserNotExist");
+                }
+
+                var result = await _userManager.ResetPasswordAsync(user, changePasswordDto.Token, changePasswordDto.Password);
+                if (!result.Succeeded)
+                {
+                    throw new Exception(result.Errors.ToString("/n"));
+                }
+
+                //await _emailService.SendPasswordChangeConfirmationEmailAsync(user);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
 
         #region Helpers
         private async Task<IGenericResult<LoginTokenDto>> GenerateLoginToken(Users user)

@@ -46,6 +46,27 @@ namespace Core.Business.Services
             await SendEmailRegisterUser(user, url);
         }
 
+        public async Task ForgotPasswordSendEmail(Users user)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var callbackUrl = $"{_frontConfiguration.RecoverPasswordPage}?userId={user.Id}&token={HttpUtility.UrlEncode(token)}";
+
+            var message = new Message
+                (
+                    to: new string[] { user.Email },
+                    subject: "Restauración de contraseña",
+                    content: "Hola. Restaure su contraseña",
+                    emailFrom: _emailSendGridConfiguration.From,
+                    attachments: null
+                );
+            
+            string body = HtmlDocumentHelper.GetHtmlDocument("ForgotPassword.html", null, new List<string> {callbackUrl});
+            message.Content = body;
+            await SendEmailAsync(message);
+
+        }
+
+
 
 
         #region Helpers

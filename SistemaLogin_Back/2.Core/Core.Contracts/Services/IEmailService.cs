@@ -9,5 +9,7 @@ namespace Core.Contracts.Services
     public interface IEmailService
     {
         Task RegistrationEmailAsync(Users user);
+
+        Task ForgotPasswordSendEmail(Users user);
     }
 }

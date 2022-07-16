@@ -35,6 +35,8 @@ namespace Api.Mapping
                 .ForMember(dest => dest.Errors, opt => opt.MapFrom(src => src.Errors.Select(p => p.Description)))
                 .ForPath(dest => dest.Data.Code, opt => opt.MapFrom(src => src.Errors.Select(p => p.Code)));
 
+            CreateMap<ChangePasswordDto, ChangePasswordRequest>();
+
         }
     }
 }

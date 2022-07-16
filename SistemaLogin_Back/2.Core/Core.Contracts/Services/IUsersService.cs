@@ -16,5 +16,8 @@ namespace Core.Contracts.Services
         public Task<IdentityResult> ConfirmUserEmailAsync(string users, string token);
         public Task<IGenericResult<LoginTokenDto>> LoginUserAsync(string email, string password);
         public Task<List<Users>> GetUsersAsync();
+        public Task ForgotPasswordGenerateToken(string userName);
+        public Task ChangePasswordGenerateToken(ChangePasswordDto model);
+        
     }
 }
