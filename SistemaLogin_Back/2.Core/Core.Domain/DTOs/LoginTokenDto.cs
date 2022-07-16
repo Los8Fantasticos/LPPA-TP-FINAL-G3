@@ -12,5 +12,6 @@ namespace Core.Domain.DTOs
         public string RefreshToken { get; set; }
         public DateTime ValidFrom { get; set; }
         public DateTime ExpirationDate { get; set; }
+        public int ExpiresIn { get; set; }
     }
 }
