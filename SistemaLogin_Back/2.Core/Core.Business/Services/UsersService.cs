@@ -14,6 +14,7 @@ using Core.Domain.ApplicationModels;
 using Core.Domain.DTOs;
 using AutoMapper;
 using Transversal.Extensions;
+using System.Security.Claims;
 
 namespace Core.Business.Services
 {
@@ -141,7 +142,7 @@ namespace Core.Business.Services
                 var result = await _userManager.ResetPasswordAsync(user, changePasswordDto.Token, changePasswordDto.Password);
                 if (!result.Succeeded)
                 {
-                    throw new Exception(result.Errors.ToString("/n"));
+                    throw new Exception(result.Errors.ToString("\n"));
                 }
 
                 //await _emailService.SendPasswordChangeConfirmationEmailAsync(user);
@@ -149,6 +150,45 @@ namespace Core.Business.Services
             catch (Exception ex)
             {
 
+                throw ex;
+            }
+        }
+
+        public async Task<LoginTokenDto> GenerateRefreshToken(Users user, string token)
+        {
+            LoginTokenDto loginTokenDto = new LoginTokenDto();
+
+            try
+            {
+                // Busco al usuario en base a los claims del bearer token
+                
+                if (user == null)
+                {
+                    throw new Exception($"Invalid bearer token claims.");
+                }
+
+                var role = _userManager.GetRolesAsync(user).Result.First();
+
+                var newBearerToken = _jwtBearerTokenHelper.CreateJwtToken(user.Id, user.UserName, new List<string>{ role});
+                var refreshToken = _refreshTokenFactory.GenerateToken();
+
+                var replaceResult = await _refreshTokenService.ReplaceAsync(user.Id, token, refreshToken);
+                if (!replaceResult.Success)
+                {
+                    throw new Exception(replaceResult.Errors.ToString("\n"));
+                }
+
+                return new LoginTokenDto
+                {
+                    Token = newBearerToken,
+                    RefreshToken = refreshToken,
+                    ValidFrom = _jwtBearerTokenHelper.GetValidFromDate(newBearerToken),
+                    ExpirationDate = _jwtBearerTokenHelper.GetExpirationDate(newBearerToken)
+                };
+
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }

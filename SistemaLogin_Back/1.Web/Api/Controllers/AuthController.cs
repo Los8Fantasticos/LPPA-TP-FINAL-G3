@@ -6,12 +6,14 @@ using Core.Contracts.Services;
 using Core.Domain.ApplicationModels;
 using Core.Domain.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Transversal.Extensions;
+using Transversal.Helpers.JWT;
 
 namespace Api.Controllers
 {
@@ -25,20 +27,25 @@ namespace Api.Controllers
         private readonly IUsersPrivilegesService _privilegesService;
         private readonly IUsersService _usersService;
         private readonly ActionLoggerMiddlewareConfiguration _actionLoggerMiddlewareConfiguration;
+        private readonly IJwtBearerTokenHelper _jwtBearerTokenHelper;
+        private readonly UserManager<Users> _userManager;
 
         public AuthController(
             IMapper mapper,
             ILogger<AuthController> logger,
             IUsersService usersService,
             IUsersPrivilegesService privilegesService,
-            ActionLoggerMiddlewareConfiguration actionLoggerMiddlewareConfiguration)
+            ActionLoggerMiddlewareConfiguration actionLoggerMiddlewareConfiguration,
+            IJwtBearerTokenHelper jwtBearerTokenHelper,
+            UserManager<Users> userManager)
         {
             _mapper = mapper;
             _logger = logger;
             _usersService = usersService;
             _privilegesService = privilegesService;
             _actionLoggerMiddlewareConfiguration = actionLoggerMiddlewareConfiguration;
-
+            _jwtBearerTokenHelper = jwtBearerTokenHelper;
+            _userManager=userManager;
         }
 
 
@@ -180,6 +187,47 @@ namespace Api.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("Refresh-Token")]
+        public async Task<IActionResult> RefreshToken(RefreshTokenRequest refreshTokenModel)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(refreshTokenModel?.BearerToken) || string.IsNullOrEmpty(refreshTokenModel?.RefreshToken))
+                {
+                    return BadRequest($"{nameof(refreshTokenModel.BearerToken)} and {nameof(refreshTokenModel.RefreshToken)} are required.");
+                }
+
+                // Corroboro que el bearer token tenga un formato jwt válido
+                if (!_jwtBearerTokenHelper.IsValidJwt(refreshTokenModel.BearerToken))
+                {
+                    return BadRequest($"{nameof(refreshTokenModel.BearerToken)} is not a valid Json Web Token.");
+                }
+
+                // El bearer token tiene que haber expirado para generar uno nuevo
+                if (!_jwtBearerTokenHelper.IsExpired(refreshTokenModel.BearerToken))
+                {
+                    return BadRequest($"{nameof(refreshTokenModel.BearerToken)} must be expired for this request.");
+                }
+
+                // Al validar el bearer token ignoro la fecha de expiración ya que es necesario que haya expirado
+                var jwtValidationResult = _jwtBearerTokenHelper.ValidateJwtToken(refreshTokenModel.BearerToken, validateExpiration: false);
+                if (!jwtValidationResult.Success)
+                {
+                    return BadRequest(jwtValidationResult.Errors);
+                }
+
+                var user = await _userManager.GetUserAsync(User);
+                var result = await _usersService.GenerateRefreshToken(user, refreshTokenModel.RefreshToken);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(1,ex,"Ocurrió un error en Endpoint RefreshToken, Error " + ex.Message);
+                throw;
+            }
+        }
 
 
         #region Helpers

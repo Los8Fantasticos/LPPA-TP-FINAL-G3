@@ -18,6 +18,8 @@ namespace Core.Contracts.Services
         public Task<List<Users>> GetUsersAsync();
         public Task ForgotPasswordGenerateToken(string userName);
         public Task ChangePasswordGenerateToken(ChangePasswordDto model);
-        
+        public Task<LoginTokenDto> GenerateRefreshToken(Users user, string token);
+
+
     }
 }
