@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Transversal.EmailService
+namespace Transversal.EmailService.Configurations
 {
-    public class EmailConfiguration
+    public class EmailSMTPConfiguration
     {
         public string From { get; set; }
         public string SmtpServer { get; set; }

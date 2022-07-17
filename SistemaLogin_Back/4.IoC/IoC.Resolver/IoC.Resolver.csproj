@@ -13,6 +13,7 @@
     <ProjectReference Include="..\..\2.Core\Core.Business\Core.Business.csproj" />
     <ProjectReference Include="..\..\2.Core\Core.Contracts\Core.Contracts.csproj" />
     <ProjectReference Include="..\..\3.Infrastructure\Infrastructure.Data\Infrastructure.Data.csproj" />
+    <ProjectReference Include="..\..\5.Transversal\Transversal.StorageService\Transversal.StorageService.csproj" />
   </ItemGroup>
 
 </Project>

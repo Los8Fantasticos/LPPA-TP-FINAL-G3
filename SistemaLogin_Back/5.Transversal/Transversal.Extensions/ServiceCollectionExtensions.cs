@@ -2,8 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using Transversal.Helpers;
 
 namespace Transversal.Extensions
 {
@@ -26,7 +28,8 @@ namespace Transversal.Extensions
             IConfigurationSection section = null;
             if (!string.IsNullOrEmpty(sectionKey))
             {
-                section = configuration.GetSection(sectionKey);
+                var TotalSections = sectionKey.Split('.');
+                section = (TotalSections.Count() <= 1) ? configuration.GetSection(sectionKey) : TotalSections.GetSection(configuration);
             }
             return services.AddConfig<TSettings>(section ?? configuration, configureOptions);
         }

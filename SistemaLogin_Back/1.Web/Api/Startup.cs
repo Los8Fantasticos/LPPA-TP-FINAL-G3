@@ -23,6 +23,9 @@ using Core.Contracts.Data;
 using Transversal.Helpers.JWT;
 using Api.JwT;
 using Core.Domain.ApplicationModels;
+using Transversal.Helpers;
+using Transversal.EmailService.Configurations;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace Api
 {
@@ -61,25 +64,28 @@ namespace Api
             {
                 options.SignIn.RequireConfirmedAccount = true;
                 options.User.RequireUniqueEmail = true;
-                options.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
+                //options.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 6;
             })
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
-
+            //var r = new EmailSendGridConfiguration();
+            //var result = r.GetType().GetFullNameSections();
+            
+            services.AddConfig<FrontConfiguration>(Configuration, nameof(FrontConfiguration));
             services.AddConfig<ActionLoggerMiddlewareConfiguration>(Configuration, nameof(ActionLoggerMiddlewareConfiguration));
-
-
+            
             var mappingConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new ApiMapping());
             });
             IMapper mapper = mappingConfig.CreateMapper();
 
+            services.AddHttpClient();
             services.ConfigureJwt(Configuration);
             services.ConfigureSwagger();
             services.AddSingleton(mapper); // Singleton al Mapper para los controllers (ahi se haria el traspaso de clases)
@@ -110,6 +116,11 @@ namespace Api
 
             app.UseHttpsRedirection();
 
+            var corsAllowAll = Configuration["CorsAllowedAllHosts"] ?? "false";
+            app.UseCors(GetCorsConfig(corsAllowAll == "true"));
+
+
+
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -118,6 +129,31 @@ namespace Api
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private Action<CorsPolicyBuilder> GetCorsConfig(bool allowAnyOrigin)
+        {
+            void configAllowSpecific(CorsPolicyBuilder configurePolicy)
+            {
+                string origins = Configuration.GetSection("AllowedOrigins").Value;
+
+                configurePolicy
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .WithOrigins(origins.Split(","))
+                .AllowCredentials();
+            }
+
+            void configAllowAll(CorsPolicyBuilder configurePolicy)
+            {
+                configurePolicy
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin();
+            }
+
+            if (allowAnyOrigin) return configAllowAll;
+            else return configAllowSpecific;
         }
 
 

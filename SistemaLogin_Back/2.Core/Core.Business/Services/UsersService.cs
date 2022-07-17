@@ -12,67 +12,73 @@ using Transversal.Helpers.JWT;
 using Core.Domain.Enum;
 using Core.Domain.ApplicationModels;
 using Core.Domain.DTOs;
+using AutoMapper;
+using Transversal.Extensions;
+using System.Security.Claims;
 
 namespace Core.Business.Services
 {
     public class UsersService : GenericService<Users>, IUsersService
     {
-        private readonly SignInManager<Users> _signInManager;
         private readonly UserManager<Users> _userManager;
 
         private readonly IJwtBearerTokenHelper _jwtBearerTokenHelper;
         private readonly ITokenGenerator _refreshTokenFactory;
         private readonly IRefreshTokenService _refreshTokenService;
+        private readonly IEmailService _emailService;
+        private readonly IMapper _mapper;
 
         public UsersService(
             IUnitOfWork unitOfWork,
-            SignInManager<Users> signInManager,
             UserManager<Users> userManager,
             IJwtBearerTokenHelper jwtBearerTokenHelper,
             ITokenGenerator tokenGenerator,
-            IRefreshTokenService refreshTokenService)
+            IRefreshTokenService refreshTokenService,
+            IMapper mapper,
+            IEmailService emailService)
             : base(unitOfWork, unitOfWork.GetRepository<IUsersRepository>())
         {
-            _signInManager = signInManager;
             _userManager = userManager;
             _jwtBearerTokenHelper = jwtBearerTokenHelper;
             _refreshTokenFactory = tokenGenerator;
             _refreshTokenService = refreshTokenService;
+            _emailService = emailService;
+            _mapper = mapper;
         }
-
-        public async Task<bool> CreateUserAsync(Users user, string password)
+        
+        public async Task<IGenericResult<RegisterDto>> CreateUserAsync(Users user, string password)
         {
+            RegisterDto registerDto = new RegisterDto();
+            GenericResult<RegisterDto> usuarioDto = new GenericResult<RegisterDto>();
             try
             {
                 var result = await _userManager.CreateAsync(user, password);
+                usuarioDto = _mapper.Map<GenericResult<RegisterDto>>(result);
                 if (!result.Succeeded)
                 {
-                    string Errores = string.Join("\n", result.Errors.Select(p => p.Description));      
-                    throw new Exception(Errores);
+                    //string Errores = string.Join("\n", result.Errors.Select(p => p.Description));
+                    return usuarioDto;
                 }
                 var role = PrivilegeEnum.User.ToString();
                 result = await _userManager.AddToRoleAsync(user, role.ToUpper());
                 if (!result.Succeeded)
                 {
-                    //_logger.LogInformation("Failed to assign role to new user {error}.", result.Errors.ToJson());
                     await _userManager.DeleteAsync(await _userManager.FindByNameAsync(user.UserName));
-                    //_logger.LogInformation("{userName} has been deleted.", user.UserName);
-
-                    //return BadRequest(new { Message = "User Role Assignment Failed", Errors = ModelState.SerializeErrors() });
-                    return false;
+                    usuarioDto.Data = registerDto;
+                    return usuarioDto;
                 }
-                return true;
+                
+                await _emailService.RegistrationEmailAsync(user);
+                registerDto.IsRegistred = true;
+                usuarioDto.Data = registerDto;
+                return usuarioDto;
             }
-            catch (InvalidOperationException ex) //Si cae a esta exepción es porque no existe el rol user en la base...
+            catch (InvalidOperationException ex) when (ex is Exception) //Si cae a esta exepción es porque no existe el rol user en la base...
             {
                 await _userManager.DeleteAsync(await _userManager.FindByNameAsync(user.UserName));
-                throw ex;
+                usuarioDto.Data.IsRegistred = false;
+                throw new Exception(ex.Message);
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
         }
 
         public async Task<bool> DeleteUserAsync(string id)
@@ -105,7 +111,89 @@ namespace Core.Business.Services
             else
                 return new GenericResult<LoginTokenDto>("UserNotConfirmed");    
         }
-        
+
+        public async Task<IdentityResult> ConfirmUserEmailAsync(string userId, string token)
+        {
+            var identityUser = await _userManager.FindByIdAsync(userId);
+            return await _userManager.ConfirmEmailAsync(identityUser ?? throw new Exception("Ocurrió un error al confirmar el usuario"), token);
+        }
+
+        public async Task ForgotPasswordGenerateToken(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null || !user.EmailConfirmed /*|| !user.Active*/)
+            {
+                throw new Exception("El usuario no existe o su email no está confirmado");
+            }
+
+            await _emailService.ForgotPasswordSendEmail(user);
+        }
+
+        public async Task ChangePasswordGenerateToken(ChangePasswordDto changePasswordDto)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(changePasswordDto.UserId);
+                if (user == null)
+                {
+                    throw new Exception("UserNotExist");
+                }
+
+                var result = await _userManager.ResetPasswordAsync(user, changePasswordDto.Token, changePasswordDto.Password);
+                if (!result.Succeeded)
+                {
+                    throw new Exception(result.Errors.ToString("\n"));
+                }
+
+                //await _emailService.SendPasswordChangeConfirmationEmailAsync(user);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public async Task<LoginTokenDto> GenerateRefreshToken(Users user, string token)
+        {
+            LoginTokenDto loginTokenDto = new LoginTokenDto();
+
+            try
+            {
+                // Busco al usuario en base a los claims del bearer token
+                
+                if (user == null)
+                {
+                    throw new Exception($"Invalid bearer token claims.");
+                }
+
+                var role = _userManager.GetRolesAsync(user).Result.First();
+
+                var newBearerToken = _jwtBearerTokenHelper.CreateJwtToken(user.Id, user.UserName, new List<string>{ role});
+                var refreshToken = _refreshTokenFactory.GenerateToken();
+
+                var replaceResult = await _refreshTokenService.ReplaceAsync(user.Id, token, refreshToken);
+                if (!replaceResult.Success)
+                {
+                    throw new Exception(replaceResult.Errors.ToString("\n"));
+                }
+
+                return new LoginTokenDto
+                {
+                    Token = newBearerToken,
+                    RefreshToken = refreshToken,
+                    ValidFrom = _jwtBearerTokenHelper.GetValidFromDate(newBearerToken),
+                    ExpirationDate = _jwtBearerTokenHelper.GetExpirationDate(newBearerToken)
+                };
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #region Helpers
         private async Task<IGenericResult<LoginTokenDto>> GenerateLoginToken(Users user)
         {
             var result = new GenericResult<LoginTokenDto>();
@@ -141,6 +229,6 @@ namespace Core.Business.Services
             return result;
         }
 
-
+        #endregion
     }
 }

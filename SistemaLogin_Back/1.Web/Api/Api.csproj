@@ -32,9 +32,5 @@
     <ProjectReference Include="..\..\Transversal.Helpers\Transversal.Helpers.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Response\" />
-  </ItemGroup>
-
 
 </Project>

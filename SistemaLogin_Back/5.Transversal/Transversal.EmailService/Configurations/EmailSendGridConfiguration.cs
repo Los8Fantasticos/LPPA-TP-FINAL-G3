@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Transversal.EmailService.SendGrid
+namespace Transversal.EmailService.Configurations
 {
     public class EmailSendGridConfiguration
     {
