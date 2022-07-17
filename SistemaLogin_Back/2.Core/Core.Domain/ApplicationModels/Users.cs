@@ -7,8 +7,9 @@ namespace Core.Domain.ApplicationModels
 {
     public class Users : IdentityUser
     {
-        public string Salt { get; set; }
-
+        public bool Active { get; set; }
+        public UsersPrivileges UserPrivileges { get; set; }
         public virtual ICollection<RefreshToken> UserRefreshTokens { get; set; }
+
     }
 }

@@ -15,6 +15,7 @@ using Core.Domain.DTOs;
 using AutoMapper;
 using Transversal.Extensions;
 using System.Security.Claims;
+using System.Collections;
 
 namespace Core.Business.Services
 {
@@ -83,12 +84,28 @@ namespace Core.Business.Services
 
         public async Task<bool> DeleteUserAsync(string id)
         {
-            var result = await _userManager.DeleteAsync(new Users { Id = id });
-            if (!result.Succeeded)
+            try
             {
-                throw new Exception(result.Errors.ToString());
+                var user = (await _repository.Get(x => x.Id == id)).FirstOrDefault();
+                if(user== null)
+                {
+                    return false;
+                }
+                user.Active = false;
+                await _repository.Update(user);
+                var userPrivilegesRepository = _unitOfWork.GetRepository<IUsersPrivilegesRepository>();
+                var relations = (await userPrivilegesRepository.Get(x => x.UserId == user.Id)).ToList();
+                relations.ForEach(x =>
+                {
+                    userPrivilegesRepository.Delete(x);
+                });
+                await _unitOfWork.SaveChangesAsync();
+                return true;
             }
-            return true;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<List<Users>> GetUsersAsync()

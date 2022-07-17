@@ -9,5 +9,6 @@ namespace Core.Domain.ApplicationModels
     public class UsersPrivileges : IdentityUserRole<string>
     {
         public int Id { get; set; }
+        public virtual ICollection<Users> PrivilegesUsers { get; set; }
     }
 }
