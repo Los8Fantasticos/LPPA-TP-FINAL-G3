@@ -1,4 +1,6 @@
 ﻿
+using Newtonsoft.Json;
+
 using System.ComponentModel.DataAnnotations;
 
 namespace Api.Request.Privileges

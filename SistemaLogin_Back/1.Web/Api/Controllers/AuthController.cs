@@ -72,7 +72,7 @@ namespace Api.Controllers
 
                 _logger.LogInformation($"New user with UserName: {registerRequest.FirstName + string.Empty + registerRequest.LastName} has been registered succesfully.");
 
-                return Ok();
+                return Ok(user.Id);
             }
             catch (Exception ex)
             {
@@ -113,7 +113,6 @@ namespace Api.Controllers
                         nameof(RefreshTokenService),
                         result.Issues);
                 }
-                result.Data.ExpiresIn = 60;
                 return Ok(result);
             }
             catch (Exception ex)

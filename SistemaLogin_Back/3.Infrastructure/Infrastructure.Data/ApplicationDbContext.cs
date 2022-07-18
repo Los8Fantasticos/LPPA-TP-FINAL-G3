@@ -61,14 +61,16 @@ namespace Infrastructure.Data
                                     .Entries()
                                     .Where(e => e.Metadata.FindProperty("NormalizedName") != null &&
                                                 e.Entity is Privileges &&
-                                                e.State == EntityState.Deleted);
+                                                (e.State == EntityState.Deleted ||
+                                                e.State == EntityState.Modified)
+                                                );
 
                 foreach (var modifiedEntry in modifiedEntries)
                 {
                     var role = modifiedEntry.Property("NormalizedName")?.CurrentValue?.ToString() ?? null;
                     if (role == "ADMINISTRADOR" || role == "USER")
                     {
-                        throw new Exception($"No se puede eliminar el rol {role} porque es un rol base del sistema.");
+                        throw new Exception($"No se puede eliminar/editar el rol {role} porque es un rol base del sistema.");
                     }
                 }
             }

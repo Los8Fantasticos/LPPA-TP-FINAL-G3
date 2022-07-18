@@ -44,8 +44,8 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Administrador")]
+        //[AllowAnonymous]
         public async Task<IActionResult> CreatePrivilege(PrivilegesPostRequest privilegesRequest)
         {
             Privileges privileges = _mapper.Map<Privileges>(privilegesRequest);
@@ -59,8 +59,8 @@ namespace Api.Controllers
         }
 
         [HttpDelete]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Administrador")]
+        //[AllowAnonymous]
         public async Task<IActionResult> DeletePrivilege([FromBody] string id)
         {
             try
@@ -81,12 +81,14 @@ namespace Api.Controllers
         }
 
         [HttpPut("Privileges")]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Administrador")]
+        //[AllowAnonymous]
         public async Task<IActionResult> UpdatePrivilege(PrivilegesPutRequest privilegesRequest)
         {
             try
             {
+                if (privilegesRequest.Id == "3bdb5928-e28e-4848-8969-e6aae1a8893b")
+                    throw new Exception("No se puede editar el rol ADMINISTRADOR.");
                 Privileges privileges = _mapper.Map<Privileges>(privilegesRequest);
 
                 if (await _privilegesService.UpdatePrivilegeAsync(privileges) == null)
@@ -104,8 +106,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("Privileges")]
-        //[Authorize(Roles = "Administrador")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> GetPrivileges()
         {
             try
@@ -120,14 +121,14 @@ namespace Api.Controllers
             }
         }
 
-        [HttpPut("AssignPrivilegesToUser")]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
-        public async Task<IActionResult> AssignPrivilegesToUser([FromHeader]string userId, [FromBody]List<string> privilegesNames)
+        [HttpPut("AssignPrivilegesToUser/{id}")]
+        [Authorize(Roles = "Admin")]
+        //[AllowAnonymous]
+        public async Task<IActionResult> AssignPrivilegesToUser(string id, [FromBody]List<string> privilegesNames)
         {
             try
             {
-                var result = await _userPrivilegesService.AssignPrivilegesToUser(userId, privilegesNames);
+                var result = await _userPrivilegesService.AssignPrivilegesToUser(id, privilegesNames);
                 if (!result)
                 {
                     return Problem("Error al asignar los privilegios al usuario.");
@@ -143,8 +144,8 @@ namespace Api.Controllers
         
         
         [HttpGet("Privileges/{id}")]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Administrador")]
+        //[AllowAnonymous]
         public async Task<IActionResult> GetPrivilegeById(string id)
         {
             try
@@ -165,8 +166,8 @@ namespace Api.Controllers
 
 
         [HttpGet("Users")]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Administrador")]
+        //[AllowAnonymous]
         public async Task<IActionResult> GetUsers()
         {
             try
@@ -182,14 +183,14 @@ namespace Api.Controllers
             }
         }
 
-        [HttpGet("UserPrivileges")]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetUserPrivileges([FromHeader] string userId)
+        [HttpGet("UserPrivileges/{id}")]
+        [Authorize(Roles = "Admin")]
+        //[AllowAnonymous]
+        public async Task<IActionResult> GetUserPrivileges(string id)
         {
             try
             {
-                var result = await _userPrivilegesService.GetUserPrivileges(userId);
+                var result = await _userPrivilegesService.GetUserPrivileges(id);
                 if (result == null)
                     return Problem("Error al obtener los privilegios.");
                
