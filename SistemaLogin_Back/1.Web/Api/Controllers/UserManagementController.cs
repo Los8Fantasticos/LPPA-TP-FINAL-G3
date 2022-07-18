@@ -44,8 +44,8 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Administrador")]
+        //[AllowAnonymous]
         public async Task<IActionResult> CreatePrivilege(PrivilegesPostRequest privilegesRequest)
         {
             Privileges privileges = _mapper.Map<Privileges>(privilegesRequest);
@@ -59,8 +59,8 @@ namespace Api.Controllers
         }
 
         [HttpDelete]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Administrador")]
+        //[AllowAnonymous]
         public async Task<IActionResult> DeletePrivilege([FromBody] string id)
         {
             try
@@ -81,9 +81,9 @@ namespace Api.Controllers
         }
 
         [HttpPut("Privileges")]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
-        public async Task<IActionResult> UpdatePrivilege([FromBody]PrivilegesPutRequest privilegesRequest)
+        [Authorize(Roles = "Administrador")]
+        //[AllowAnonymous]
+        public async Task<IActionResult> UpdatePrivilege(PrivilegesPutRequest privilegesRequest)
         {
             try
             {
@@ -106,8 +106,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("Privileges")]
-        //[Authorize(Roles = "Administrador")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> GetPrivileges()
         {
             try
@@ -123,8 +122,8 @@ namespace Api.Controllers
         }
 
         [HttpPut("AssignPrivilegesToUser/{id}")]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
+        //[AllowAnonymous]
         public async Task<IActionResult> AssignPrivilegesToUser(string id, [FromBody]List<string> privilegesNames)
         {
             try
@@ -145,8 +144,8 @@ namespace Api.Controllers
         
         
         [HttpGet("Privileges/{id}")]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Administrador")]
+        //[AllowAnonymous]
         public async Task<IActionResult> GetPrivilegeById(string id)
         {
             try
@@ -167,8 +166,8 @@ namespace Api.Controllers
 
 
         [HttpGet("Users")]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Administrador")]
+        //[AllowAnonymous]
         public async Task<IActionResult> GetUsers()
         {
             try
@@ -185,8 +184,8 @@ namespace Api.Controllers
         }
 
         [HttpGet("UserPrivileges/{id}")]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
+        //[AllowAnonymous]
         public async Task<IActionResult> GetUserPrivileges(string id)
         {
             try

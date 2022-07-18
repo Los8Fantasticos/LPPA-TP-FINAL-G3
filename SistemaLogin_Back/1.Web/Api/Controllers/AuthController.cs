@@ -113,7 +113,6 @@ namespace Api.Controllers
                         nameof(RefreshTokenService),
                         result.Issues);
                 }
-                result.Data.ExpiresIn = 60;
                 return Ok(result);
             }
             catch (Exception ex)

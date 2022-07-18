@@ -10,8 +10,8 @@ namespace Core.Domain.DTOs
         public string Email { get; set; }
         public string Token { get; set; }
         public string RefreshToken { get; set; }
+        public string RoleName { get; set; }
         public DateTime ValidFrom { get; set; }
         public DateTime ExpirationDate { get; set; }
-        public int ExpiresIn { get; set; }
     }
 }

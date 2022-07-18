@@ -216,6 +216,15 @@ namespace Core.Business.Services
             var result = new GenericResult<LoginTokenDto>();
 
             var role = await _userManager.GetRolesAsync(user);
+            var roleBase = role.ToList();
+            bool IsAdmin = false;
+            roleBase.ForEach(x =>
+            {
+                if (!IsAdmin)
+                    IsAdmin = x.ToLower() == "administrador" ? true : false;
+            }
+            );
+
 
             var bearerToken = _jwtBearerTokenHelper.CreateJwtToken(user.Id, user.UserName, role.ToList());
             if (bearerToken is null)
@@ -231,6 +240,8 @@ namespace Core.Business.Services
             {
                 result.Issues = creationResult.Errors;
             }
+            //transform role tolowwer all items
+
 
             var response = new LoginTokenDto
             {
@@ -239,7 +250,8 @@ namespace Core.Business.Services
                 ValidFrom = _jwtBearerTokenHelper.GetValidFromDate(bearerToken),
                 ExpirationDate = _jwtBearerTokenHelper.GetExpirationDate(bearerToken),
                 UserName = user.UserName,
-                Email = user.Email
+                Email = user.Email,
+                RoleName = IsAdmin ? "Administrador" : role.FirstOrDefault()
             };
 
             result.Data = response;
