@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Transversal.Helpers
@@ -19,15 +20,15 @@ namespace Transversal.Helpers
         public static string GetHtmlDocument(string htmlName, string RootPath, List<string> replace)
         {
             string body;
-            //int count = 0;
-            ////string pathTemplates = Path.Combine(ServerInfoHelper.MapPath(RootPath), "Templates");
-            //using (StreamReader sr = new StreamReader(Path.Combine("D:/Repositorios-GitGUI/LPPA-TP-FINAL-G3/SistemaLogin_Back/3.Infrastructure/Infrastructure.Data/TemplatesEmail/", htmlName)))
-            //{
-            //    body = sr.ReadToEnd();
-            //}
-            //replace.ForEach(x => { body = body.Replace("{"+count+"}",x); count++; });
+            int count = 0;
+            //string pathTemplates = Path.Combine(ServerInfoHelper.MapPath(RootPath), "Templates");
+            using (StreamReader sr = new StreamReader(Path.Combine((string)AppDomain.CurrentDomain.GetData("InfraestructuraRootPath"), htmlName)))
+            {
+                body = sr.ReadToEnd();
+            }
+            replace.ForEach(x => { body = body.Replace("{" + count + "}", x); count++; });
 
-            return null;
+            return body;
         }
     }
 }
