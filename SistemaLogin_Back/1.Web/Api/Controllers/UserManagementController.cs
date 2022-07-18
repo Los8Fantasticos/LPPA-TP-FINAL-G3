@@ -61,7 +61,7 @@ namespace Api.Controllers
         [HttpDelete]
         //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
-        public async Task<IActionResult> DeletePrivilege(string id)
+        public async Task<IActionResult> DeletePrivilege([FromBody] string id)
         {
             try
             {
@@ -104,8 +104,8 @@ namespace Api.Controllers
         }
 
         [HttpGet("Privileges")]
-        [Authorize(Roles = "Administrador")]
-        //[AllowAnonymous]
+        //[Authorize(Roles = "Administrador")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetPrivileges()
         {
             try

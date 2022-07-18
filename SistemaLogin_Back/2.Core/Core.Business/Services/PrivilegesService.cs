@@ -31,15 +31,26 @@ namespace Core.Business.Services
 
         public async Task<bool> DeletePrivilegeAsync(string id)
         {
-            var Rol = (await _repository.Get(x => x.Id == id, tracking: false)).FirstOrDefault(); //Esta manera y la de abajo son válidas...
-            //var Rol = _roleManager.GetRoleNameAsync(new Privileges { Id = id });
-            var result = await _roleManager.DeleteAsync(Rol);
-            //var result = await _roleManager.DeleteAsync(new Privileges { Id = id });
-            if (!result.Succeeded)
+            try
             {
-                throw new Exception(result.Errors.ToString());
+                var Rol = (await _repository.Get(x => x.Id == id, tracking: false)).FirstOrDefault(); //Esta manera y la de abajo son válidas...
+                if (Rol == null)
+                {
+                    return false;
+                }
+                //var Rol = _roleManager.GetRoleNameAsync(new Privileges { Id = id });
+                var result = await _roleManager.DeleteAsync(Rol);
+                //var result = await _roleManager.DeleteAsync(new Privileges { Id = id });
+                if (!result.Succeeded)
+                {
+                    throw new Exception(result.Errors.ToString());
+                }
+                return true;
             }
-            return true;
+            catch (Exception ex)
+            {
+                throw ex;
+            }         
         }
 
         public async Task<Privileges> UpdatePrivilegeAsync(Privileges privileges)

@@ -55,19 +55,26 @@ namespace Infrastructure.Data
 
         private void CheckDeleteRoleBase()
         {
-            var modifiedEntries = ChangeTracker
-                .Entries()
-                .Where(e => e.Metadata.FindProperty("NormalizedName") != null &&
-                            e.Entity is Privileges &&
-                            e.State == EntityState.Deleted);
-
-            foreach (var modifiedEntry in modifiedEntries)
+            try
             {
-                var role = modifiedEntry.Property("NormalizedName")?.CurrentValue?.ToString() ?? null;
-                if (role == "ADMINISTRADOR" || role == "USER")
+                var modifiedEntries = ChangeTracker
+                                    .Entries()
+                                    .Where(e => e.Metadata.FindProperty("NormalizedName") != null &&
+                                                e.Entity is Privileges &&
+                                                e.State == EntityState.Deleted);
+
+                foreach (var modifiedEntry in modifiedEntries)
                 {
-                    throw new Exception($"No se puede eliminar el rol {role} porque es un rol base del sistema.");
+                    var role = modifiedEntry.Property("NormalizedName")?.CurrentValue?.ToString() ?? null;
+                    if (role == "ADMINISTRADOR" || role == "USER")
+                    {
+                        throw new Exception($"No se puede eliminar el rol {role} porque es un rol base del sistema.");
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
     }
