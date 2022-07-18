@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Transversal.Extensions;
 
 namespace Core.Business.Services
 {
@@ -24,7 +25,7 @@ namespace Core.Business.Services
             var result = await _roleManager.CreateAsync(privileges);
             if (!result.Succeeded)
             {
-                throw new Exception(result.Errors.ToString());
+                throw new Exception(result.Errors.ToString("\n"));
             }
             return true;
         }
@@ -43,7 +44,7 @@ namespace Core.Business.Services
                 //var result = await _roleManager.DeleteAsync(new Privileges { Id = id });
                 if (!result.Succeeded)
                 {
-                    throw new Exception(result.Errors.ToString());
+                    throw new Exception(result.Errors.ToString("\n"));
                 }
                 return true;
             }
@@ -58,7 +59,7 @@ namespace Core.Business.Services
             var result = await _roleManager.UpdateAsync(privileges);
             if (!result.Succeeded)
             {
-                throw new Exception(result.Errors.ToString());
+                throw new Exception(result.Errors.ToString("\n"));
             }
             return privileges;
         }
