@@ -215,8 +215,14 @@ namespace Core.Business.Services
             try
             {
                 //get user
-                var userDb = (await _repository.Get(x => x.Id == user.Id, tracking: false)).FirstOrDefault();
-                var result = await _userManager.UpdateAsync(user);
+                var userDb = (await _repository.Get(x => x.Id == user.Id)).FirstOrDefault();
+                userDb.Active = true;
+                userDb.Email = user.Email;
+                userDb.FirstName = user.FirstName;
+                userDb.LastName = user.LastName;
+                userDb.PhoneNumber = user.PhoneNumber;
+                userDb.UserName = user.UserName;
+                var result = await _userManager.UpdateAsync(userDb);
 
                 return true;
             }
