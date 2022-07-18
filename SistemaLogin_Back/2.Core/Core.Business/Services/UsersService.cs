@@ -110,7 +110,7 @@ namespace Core.Business.Services
 
         public async Task<List<Users>> GetUsersAsync()
         {
-            return (await _repository.Get()).ToList();            
+            return (await _repository.Get(tracking: false)).ToList();            
         }       
         
 
@@ -209,6 +209,24 @@ namespace Core.Business.Services
                 throw ex;
             }
         }
+        
+        public async Task<bool> UpdateUserAsync(Users user)
+        {
+            try
+            {
+                //get user
+                var userDb = (await _repository.Get(x => x.Id == user.Id, tracking: false)).FirstOrDefault();
+                var result = await _userManager.UpdateAsync(user);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+                throw ex;
+            }
+            
+        }
 
         #region Helpers
         private async Task<IGenericResult<LoginTokenDto>> GenerateLoginToken(Users user)
@@ -257,7 +275,6 @@ namespace Core.Business.Services
             result.Data = response;
             return result;
         }
-
         #endregion
     }
 }

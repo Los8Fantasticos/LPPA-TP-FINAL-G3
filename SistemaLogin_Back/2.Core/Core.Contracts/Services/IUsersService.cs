@@ -20,6 +20,7 @@ namespace Core.Contracts.Services
         public Task ChangePasswordGenerateToken(ChangePasswordDto model);
         public Task<LoginTokenDto> GenerateRefreshToken(Users user, string token);
         public Task<bool> DeleteUserAsync(string id);
+        public Task<bool> UpdateUserAsync(Users users);
 
 
     }

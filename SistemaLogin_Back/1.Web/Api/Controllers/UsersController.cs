@@ -42,9 +42,9 @@ namespace Api.Controllers
         }
 
         [HttpDelete]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
-        public async Task<IActionResult> DeleteUser(string id)
+        [Authorize(Roles = "Administrador")]
+        //[AllowAnonymous]
+        public async Task<IActionResult> DeleteUser([FromBody] string id)
         {
             try
             {
@@ -59,6 +59,30 @@ namespace Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Error in DeleteUser" + ex.Message);
+                return Problem(ex.Message);
+            }
+        }
+        
+        //edit user endpoint
+        [HttpPut]
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> EditUser(EditUserRequest user)
+        {
+            try
+            {
+                Users editedUser = _mapper.Map<Users>(user);
+                editedUser.Active = true;
+                var result = await _usersService.UpdateUserAsync(editedUser);
+                if (!result)
+                {
+                    return Problem("Error al editar el usuario.");
+                }
+                _logger.LogInformation($"Edited user: {user.Id} succesfully.");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in EditUser" + ex.Message);
                 return Problem(ex.Message);
             }
         }

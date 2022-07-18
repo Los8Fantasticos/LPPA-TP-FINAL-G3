@@ -85,6 +85,7 @@ namespace Infrastructure.Data.Repositories
 
         public virtual async Task Update(T entity)
         {
+            
             if (entity == null)
             {
                 throw new ArgumentNullException(nameof(entity));

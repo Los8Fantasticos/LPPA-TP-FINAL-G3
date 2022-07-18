@@ -37,6 +37,9 @@ namespace Api.Mapping
 
             CreateMap<ChangePasswordDto, ChangePasswordRequest>();
 
+            CreateMap<EditUserRequest, Users>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email));
+            CreateMap<Users, EditUserRequest>();
         }
     }
 }
