@@ -83,10 +83,12 @@ namespace Api.Controllers
         [HttpPut("Privileges")]
         //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
-        public async Task<IActionResult> UpdatePrivilege(PrivilegesPutRequest privilegesRequest)
+        public async Task<IActionResult> UpdatePrivilege([FromBody]PrivilegesPutRequest privilegesRequest)
         {
             try
             {
+                if (privilegesRequest.Id == "3bdb5928-e28e-4848-8969-e6aae1a8893b")
+                    throw new Exception("No se puede editar el rol ADMINISTRADOR.");
                 Privileges privileges = _mapper.Map<Privileges>(privilegesRequest);
 
                 if (await _privilegesService.UpdatePrivilegeAsync(privileges) == null)
@@ -120,14 +122,14 @@ namespace Api.Controllers
             }
         }
 
-        [HttpPut("AssignPrivilegesToUser")]
+        [HttpPut("AssignPrivilegesToUser/{id}")]
         //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
-        public async Task<IActionResult> AssignPrivilegesToUser([FromHeader]string userId, [FromBody]List<string> privilegesNames)
+        public async Task<IActionResult> AssignPrivilegesToUser(string id, [FromBody]List<string> privilegesNames)
         {
             try
             {
-                var result = await _userPrivilegesService.AssignPrivilegesToUser(userId, privilegesNames);
+                var result = await _userPrivilegesService.AssignPrivilegesToUser(id, privilegesNames);
                 if (!result)
                 {
                     return Problem("Error al asignar los privilegios al usuario.");
@@ -182,14 +184,14 @@ namespace Api.Controllers
             }
         }
 
-        [HttpGet("UserPrivileges")]
+        [HttpGet("UserPrivileges/{id}")]
         //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetUserPrivileges([FromHeader] string userId)
+        public async Task<IActionResult> GetUserPrivileges(string id)
         {
             try
             {
-                var result = await _userPrivilegesService.GetUserPrivileges(userId);
+                var result = await _userPrivilegesService.GetUserPrivileges(id);
                 if (result == null)
                     return Problem("Error al obtener los privilegios.");
                
