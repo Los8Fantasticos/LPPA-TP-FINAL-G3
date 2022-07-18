@@ -44,8 +44,8 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Administrador")]
-        //[AllowAnonymous]
+        //[Authorize(Roles = "Administrador")]
+        [AllowAnonymous]
         public async Task<IActionResult> CreatePrivilege(PrivilegesPostRequest privilegesRequest)
         {
             Privileges privileges = _mapper.Map<Privileges>(privilegesRequest);
@@ -59,8 +59,8 @@ namespace Api.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Administrador")]
-        //[AllowAnonymous]
+        //[Authorize(Roles = "Administrador")]
+        [AllowAnonymous]
         public async Task<IActionResult> DeletePrivilege([FromBody] string id)
         {
             try
@@ -87,8 +87,6 @@ namespace Api.Controllers
         {
             try
             {
-                if (privilegesRequest.Id == "3bdb5928-e28e-4848-8969-e6aae1a8893b")
-                    throw new Exception("No se puede editar el rol ADMINISTRADOR.");
                 Privileges privileges = _mapper.Map<Privileges>(privilegesRequest);
 
                 if (await _privilegesService.UpdatePrivilegeAsync(privileges) == null)
@@ -122,7 +120,7 @@ namespace Api.Controllers
         }
 
         [HttpPut("AssignPrivilegesToUser/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrador")]
         //[AllowAnonymous]
         public async Task<IActionResult> AssignPrivilegesToUser(string id, [FromBody]List<string> privilegesNames)
         {
@@ -184,7 +182,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("UserPrivileges/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrador")]
         //[AllowAnonymous]
         public async Task<IActionResult> GetUserPrivileges(string id)
         {

@@ -56,6 +56,10 @@ namespace Core.Business.Services
 
         public async Task<Privileges> UpdatePrivilegeAsync(Privileges privileges)
         {
+            var role = (await _repository.Get(x => x.Id == privileges.Id)).FirstOrDefault();
+            if(role.NormalizedName == "ADMINISTRADOR" || role.NormalizedName == "USER")
+                throw new Exception($"No se puede eliminar/editar el rol {role.Name} porque es un rol base del sistema.");
+
             var result = await _roleManager.UpdateAsync(privileges);
             if (!result.Succeeded)
             {
