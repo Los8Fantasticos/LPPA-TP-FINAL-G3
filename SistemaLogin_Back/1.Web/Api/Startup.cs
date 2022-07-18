@@ -26,6 +26,7 @@ using Core.Domain.ApplicationModels;
 using Transversal.Helpers;
 using Transversal.EmailService.Configurations;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using System.IO;
 
 namespace Api
 {
@@ -113,13 +114,19 @@ namespace Api
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "UAI LPPA-FINAL API V1");
             });
 
-
+            
             app.UseHttpsRedirection();
 
             var corsAllowAll = Configuration["CorsAllowedAllHosts"] ?? "false";
             app.UseCors(GetCorsConfig(corsAllowAll == "true"));
+            string result = context.GetType().Assembly.Location;
+            FileInfo file = new FileInfo(result);
+            var Infraestructura = file.Directory.Parent.Parent.Parent.Parent.Parent.FullName + @"\3.Infrastructure\Infrastructure.Data\TemplatesEmail\";
+            
 
-
+            AppDomain.CurrentDomain.SetData("ContentRootPath", env.ContentRootPath);
+            AppDomain.CurrentDomain.SetData("WebRootPath", env.WebRootPath);
+            AppDomain.CurrentDomain.SetData("InfraestructuraRootPath", Infraestructura);
 
             app.UseRouting();
             app.UseAuthentication();

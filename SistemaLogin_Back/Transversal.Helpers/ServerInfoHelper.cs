@@ -11,5 +11,10 @@ namespace Transversal.Helpers
         {
             return Path.Combine((string)AppDomain.CurrentDomain.GetData("ContentRootPath"), path);
         }
+
+        public static string MapPath2(string path)
+        {
+            return Path.Combine((string)AppDomain.CurrentDomain.GetData("Infraestructura"), path);
+        }
     }
 }
